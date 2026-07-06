@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { env } from "../src/config/env";
 import morgan from "morgan";
+import { testDatabaseConnection } from "./config/testDatabase";
 
 
 import healthRoutes from "./routes/healthRoutes";
@@ -20,6 +21,7 @@ app.use(morgan("dev"));
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use(errorHandler)
+testDatabaseConnection();
 
 const PORT = env.PORT || 3000;
 
