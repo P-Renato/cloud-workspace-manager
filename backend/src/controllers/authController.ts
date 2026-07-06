@@ -1,37 +1,40 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { createUser, findUserByEmail } from "../services/userStore";
+import { createUser, findByEmail } from "../repositories/userRepository";
 import { generateToken, verifyToken } from "../services/authService";
 import crypto from "crypto";
+import { AuthRequest } from "../middleware/authenticate";
 
 export const register = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const existing = findUserByEmail(email);
+  const existing = await findByEmail(email);
+
   if (existing) {
     return res.status(400).json({ message: "User already exists" });
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const user = createUser({
-    id: crypto.randomUUID(),
-    email,
-    passwordHash,
-  });
+  const id = crypto.randomUUID();
 
-  res.json({ id: user.id, email: user.email });
+  await createUser(id, email, passwordHash);
+
+  res.json({
+    id,
+    email,
+  });
 };
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const user = findUserByEmail(email);
+  const user = await findByEmail(email);
   if (!user) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const valid = await bcrypt.compare(password, user.passwordHash);
+  const valid = await bcrypt.compare(password, user.password_hash);
 
   if (!valid) {
     return res.status(401).json({ message: "Invalid credentials" });
@@ -42,19 +45,8 @@ export const login = async (req: Request, res: Response) => {
   res.json({ token });
 };
 
-export const me = (req: Request, res: Response) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = verifyToken(token);
-    res.json({ userId: decoded.userId });
-  } catch {
-    res.status(401).json({ message: "Invalid token" });
-  }
+export const me = (req: AuthRequest, res: Response) => {
+  res.json({
+    userId: req.userId,
+  });
 };
