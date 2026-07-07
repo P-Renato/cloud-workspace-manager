@@ -1,6 +1,7 @@
 import { pool } from "../config/database";
+import { User } from "../types/user";
 
-export async function findByEmail(email: string) {
+export async function findByEmail(email: string): Promise<User | null> {
   const result = await pool.query(
     `
     SELECT id,
@@ -20,7 +21,7 @@ export async function createUser(
     id: string,
     email: string,
     passwordHash: string
-) {
+): Promise<void> {
     await pool.query(
         `
         INSERT INTO users

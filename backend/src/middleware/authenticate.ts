@@ -1,7 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../services/authService";
+import { ParamsDictionary } from "express-serve-static-core";
 
-export interface AuthRequest extends Request {
+export interface AuthRequest<
+  P = ParamsDictionary,
+  ResBody = unknown,
+  ReqBody = unknown,
+  ReqQuery = unknown,
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
   userId?: string;
 }
 
