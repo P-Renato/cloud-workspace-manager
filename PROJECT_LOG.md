@@ -44,3 +44,35 @@
 * Added migration runner (`npm run migrate`)
 * Automated database schema creation from migration files
 * Implemented migration tracking to prevent duplicate execution
+
+## Session 6 – Workspace Management API
+
+* Created workspace database migration
+* Added workspaces table with user relationship
+* Implemented Workspace TypeScript models
+* Created workspace repository layer
+* Added workspace request validation with Zod
+* Implemented workspace controllers
+* Added authenticated workspace routes
+* Integrated workspace API with Express
+* Tested complete workspace lifecycle using curl:
+  * Create workspace
+  * List workspaces
+  * Retrieve workspace
+  * Delete workspace
+* Verified JWT authentication and ownership checks
+
+## Testing
+
+Backend API tested manually using curl commands.
+
+## Session 7 – Service Layer Refactor
+
+* Introduced workspace service layer
+* Moved workspace business logic from controllers into services
+* Refactored controllers to depend on services instead of repositories
+* Improved separation of concerns:
+  * Controllers handle HTTP requests and responses
+  * Services contain business logic
+  * Repositories manage database access
+* Performed regression testing to verify existing API functionality remained unchanged
