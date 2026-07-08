@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { env } from "../src/config/env";
 import morgan from "morgan";
 import { testDatabaseConnection } from "./config/testDatabase";
-
+import workspaceRoutes from "./routes/workspaceRoutes";
 
 import healthRoutes from "./routes/healthRoutes";
 import authRoutes from "./routes/authRoutes"
@@ -20,6 +20,7 @@ app.use(morgan("dev"));
 
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/workspaces", workspaceRoutes);
 app.use(errorHandler)
 testDatabaseConnection();
 
