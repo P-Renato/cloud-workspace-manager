@@ -88,3 +88,39 @@ export async function updateWorkspaceStatus(
     [status, workspaceId]
   );
 }
+export async function updateContainerId(
+  workspaceId: string,
+  containerId: string | null
+): Promise<void> {
+  await pool.query(
+    `
+    UPDATE workspaces
+    SET container_id = $1,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    `,
+    [containerId, workspaceId]
+  );
+}
+
+export async function findByContainerId(
+  containerId: string
+): Promise<Workspace | null> {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      user_id,
+      name,
+      status,
+      container_id,
+      created_at,
+      updated_at
+    FROM workspaces
+    WHERE container_id = $1
+    `,
+    [containerId]
+  );
+
+  return result.rows[0] ?? null;
+}
