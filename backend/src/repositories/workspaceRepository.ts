@@ -1,4 +1,5 @@
 import { pool } from "../config/database";
+import { WorkspaceStatus } from "../types/workspace";
 import { Workspace } from "../types/workspace";
 
 export async function createWorkspace(
@@ -70,5 +71,20 @@ export async function deleteWorkspace(
     WHERE id = $1
     `,
     [id]
+  );
+}
+
+export async function updateWorkspaceStatus(
+  workspaceId: string,
+  status: WorkspaceStatus
+): Promise<void> {
+  await pool.query(
+    `
+    UPDATE workspaces
+    SET status = $1,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    `,
+    [status, workspaceId]
   );
 }
