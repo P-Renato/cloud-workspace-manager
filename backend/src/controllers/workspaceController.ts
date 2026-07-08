@@ -8,6 +8,8 @@ import {
   getUserWorkspaces,
   getWorkspaceById,
   deleteUserWorkspace,
+  startWorkspace,
+  stopWorkspace,
 } from "../services/workspaceService";
 
 interface WorkspaceParams {
@@ -101,4 +103,70 @@ export const remove = async (
   await deleteUserWorkspace(workspace.id);
 
   return res.status(204).send();
+};
+
+export const start = async (
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) => {
+  if (!req.userId) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+
+  const workspace = await getWorkspaceById(
+    req.params.id
+  );
+
+  if (!workspace) {
+    return res.status(404).json({
+      message: "Workspace not found",
+    });
+  }
+
+  if (workspace.user_id !== req.userId) {
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+  }
+
+  await startWorkspace(workspace.id);
+
+  return res.json({
+    message: "Workspace started",
+  });
+};
+
+export const stop = async (
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) => {
+  if (!req.userId) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+
+  const workspace = await getWorkspaceById(
+    req.params.id
+  );
+
+  if (!workspace) {
+    return res.status(404).json({
+      message: "Workspace not found",
+    });
+  }
+
+  if (workspace.user_id !== req.userId) {
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+  }
+
+  await stopWorkspace(workspace.id);
+
+  return res.json({
+    message: "Workspace stopped",
+  });
 };

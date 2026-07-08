@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {create, getAll, getById, remove, } from "../controllers/workspaceController";
+import {create, getAll, getById, remove, start, stop, } from "../controllers/workspaceController";
 import { authenticate } from "../middleware/authenticate";
 import { validate } from "../middleware/validate";
 
@@ -18,5 +18,9 @@ router.get("/", getAll);
 router.get("/:id", getById);
 
 router.delete("/:id", remove);
+
+router.patch("/:id/start", start);
+
+router.patch("/:id/stop", stop);
 
 export default router;
