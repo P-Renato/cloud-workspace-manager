@@ -1,7 +1,10 @@
 import { Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
-
+import { UnauthorizedError } from "../errors/UnauthorizedError";
 import { AuthRequest } from "../middleware/authenticate";
+import { ForbiddenError } from "../errors/ForbiddenError";
+import { NotFoundError } from "../errors/NotFoundError";
+import { getContainerMetadata } from "../services/dockerService";
 
 import {
   createWorkspace,
@@ -21,9 +24,7 @@ export const create = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspace = await createWorkspace(
@@ -39,9 +40,7 @@ export const getAll = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspaces = await getUserWorkspaces(req.userId);
@@ -54,23 +53,17 @@ export const getById = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspace = await getWorkspaceById(req.params.id);
 
   if (!workspace) {
-    return res.status(404).json({
-      message: "Workspace not found",
-    });
+    throw new NotFoundError();
   }
 
   if (workspace.user_id !== req.userId) {
-    return res.status(403).json({
-      message: "Forbidden",
-    });
+    throw new ForbiddenError();
   }
 
   return res.json(workspace);
@@ -81,23 +74,17 @@ export const remove = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspace = await getWorkspaceById(req.params.id);
 
   if (!workspace) {
-    return res.status(404).json({
-      message: "Workspace not found",
-    });
+    throw new NotFoundError();
   }
 
   if (workspace.user_id !== req.userId) {
-    return res.status(403).json({
-      message: "Forbidden",
-    });
+    throw new ForbiddenError();
   }
 
   await deleteUserWorkspace(workspace.id);
@@ -110,9 +97,7 @@ export const start = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspace = await getWorkspaceById(
@@ -120,15 +105,11 @@ export const start = async (
   );
 
   if (!workspace) {
-    return res.status(404).json({
-      message: "Workspace not found",
-    });
+    throw new NotFoundError();
   }
 
   if (workspace.user_id !== req.userId) {
-    return res.status(403).json({
-      message: "Forbidden",
-    });
+    throw new ForbiddenError();
   }
 
   await startWorkspace(workspace.id);
@@ -143,9 +124,7 @@ export const stop = async (
   res: Response
 ) => {
   if (!req.userId) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new UnauthorizedError();
   }
 
   const workspace = await getWorkspaceById(
@@ -153,15 +132,11 @@ export const stop = async (
   );
 
   if (!workspace) {
-    return res.status(404).json({
-      message: "Workspace not found",
-    });
+    throw new NotFoundError();
   }
 
   if (workspace.user_id !== req.userId) {
-    return res.status(403).json({
-      message: "Forbidden",
-    });
+    throw new ForbiddenError();
   }
 
   await stopWorkspace(workspace.id);
@@ -169,4 +144,42 @@ export const stop = async (
   return res.json({
     message: "Workspace stopped",
   });
+};
+
+export const metadata = async (
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) => {
+  if (!req.userId) {
+    throw new UnauthorizedError();
+  }
+
+  const workspace =
+    await getWorkspaceById(
+      req.params.id
+    );
+
+  if (!workspace) {
+    throw new NotFoundError();
+  }
+
+  if (
+    workspace.user_id !==
+    req.userId
+  ) {
+    throw new ForbiddenError();
+  }
+
+  if (
+    !workspace.container_id
+  ) {
+    return res.json(null);
+  }
+
+  const metadata =
+    await getContainerMetadata(
+      workspace.container_id
+    );
+
+  return res.json(metadata);
 };

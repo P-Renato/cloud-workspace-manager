@@ -12,6 +12,9 @@ router.use(authenticate_1.authenticate);
 router.post("/", (0, validate_1.validate)(workspaceSchemas_1.createWorkspaceSchema), workspaceController_1.create);
 router.get("/", workspaceController_1.getAll);
 router.get("/:id", workspaceController_1.getById);
+router.get("/:id/metadata", workspaceController_1.metadata);
 router.delete("/:id", workspaceController_1.remove);
+router.patch("/:id/start", workspaceController_1.start);
+router.patch("/:id/stop", workspaceController_1.stop);
 exports.default = router;
 //# sourceMappingURL=workspaceRoutes.js.map

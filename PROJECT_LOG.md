@@ -76,3 +76,48 @@ Backend API tested manually using curl commands.
   * Services contain business logic
   * Repositories manage database access
 * Performed regression testing to verify existing API functionality remained unchanged
+
+## Session 8 – Docker Workspace Runtime
+
+* Added Docker service abstraction
+* Implemented container creation and lifecycle management
+* Added workspace start and stop endpoints
+* Persisted Docker container IDs in PostgreSQL
+* Implemented container metadata endpoint
+* Added activity logging for workspace lifecycle events
+* Integrated Express backend with Docker daemon
+* Diagnosed and resolved Linux Docker socket permission issues
+* Learned process permissions and Docker group membership handling
+
+## Session 9 – Workspace Lifecycle & Activity Logging
+
+* Added `activity_logs` table and migration system support
+* Implemented activity log repository
+* Added workspace lifecycle endpoints:
+  * `PATCH /api/workspaces/:id/start`
+  * `PATCH /api/workspaces/:id/stop`
+* Implemented workspace status transitions:
+  * `stopped → running`
+  * `running → stopped`
+* Added activity logging for:
+  * Workspace creation
+  * Workspace deletion
+  * Workspace start
+  * Workspace stop
+* Extended service layer with workspace lifecycle business logic
+* Updated frontend API client to support start and stop operations
+* Added workspace start and stop actions to the dashboard
+* Implemented live workspace status updates in the UI
+* Verified persistence of workspace state and activity logs in PostgreSQL
+
+## Session 10 – Docker Workspace Integration
+
+* Created Docker service layer using Node.js child processes
+* Implemented container creation using Alpine Linux images
+* Implemented workspace start and stop through Docker
+* Persisted Docker container IDs in PostgreSQL
+* Implemented container removal during workspace deletion
+* Connected workspace lifecycle operations to Docker Engine
+* Verified synchronization between PostgreSQL state and container state
+* Tested end-to-end infrastructure management from React dashboard to Docker runtime
+* Introduced real infrastructure orchestration concepts into the application

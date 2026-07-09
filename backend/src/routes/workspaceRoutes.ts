@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {create, getAll, getById, remove, start, stop, } from "../controllers/workspaceController";
+import {create, getAll, getById, remove, start, stop, metadata, } from "../controllers/workspaceController";
 import { authenticate } from "../middleware/authenticate";
 import { validate } from "../middleware/validate";
 
@@ -16,6 +16,8 @@ router.post("/", validate(createWorkspaceSchema), create);
 router.get("/", getAll);
 
 router.get("/:id", getById);
+
+router.get("/:id/metadata", metadata);
 
 router.delete("/:id", remove);
 

@@ -1,30 +1,176 @@
 import { useEffect, useState } from "react";
+
+import { useAuth } from "../context/AuthContext";
+
 import { getHealth, type HealthResponse } from "../api/health";
 
+import { getWorkspaces, createWorkspace, deleteWorkspace, startWorkspace, stopWorkspace,} from "../api/workspaces";
+
+import type { Workspace } from "../types/workspace";
+
+import WorkspaceForm from "../components/WorkspaceForm";
+import WorkspaceList from "../components/WorkspaceList";
+
 export default function Dashboard() {
-  const [data, setData] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { user, token, logout } =
+    useAuth();
+
+  const [health, setHealth] =
+    useState<HealthResponse | null>(null);
+
+  const [healthError, setHealthError] =
+    useState<string | null>(null);
+
+  const [workspaces, setWorkspaces] =
+    useState<Workspace[]>([]);
+
+  const [workspaceError, setWorkspaceError] =
+    useState<string | null>(null);
 
   useEffect(() => {
     getHealth()
-      .then(setData)
-      .catch((err) => setError(err.message));
+      .then(setHealth)
+      .catch((err) =>
+        setHealthError(err.message)
+      );
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    loadWorkspaces();
+  }, [token]);
+
+  async function loadWorkspaces() {
+    if (!token) {
+      return;
+    }
+
+    try {
+      const data =
+        await getWorkspaces(token);
+
+      setWorkspaces(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        setWorkspaceError(err.message);
+      }
+    }
+  }
+
+  async function handleCreate(
+    name: string
+  ) {
+    if (!token) {
+      return;
+    }
+
+    await createWorkspace(token, name);
+
+    await loadWorkspaces();
+  }
+
+  async function handleStart(
+    workspaceId: string
+  ) {
+    if (!token) {
+      return;
+    }
+
+    await startWorkspace(
+      token,
+      workspaceId
+    );
+
+    await loadWorkspaces();
+  }
+
+  async function handleStop(
+    workspaceId: string
+  ) {
+    if (!token) {
+      return;
+    }
+
+    await stopWorkspace(
+      token,
+      workspaceId
+    );
+
+    await loadWorkspaces();
+  }
+
+  async function handleDelete(
+    workspaceId: string
+  ) {
+    if (!token) {
+      return;
+    }
+
+    await deleteWorkspace(
+      token,
+      workspaceId
+    );
+
+    await loadWorkspaces();
+  }
 
   return (
     <div>
-      <h3>System Status</h3>
+      <h1>Cloud Workspace Manager</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <p>
+        <strong>User ID:</strong>{" "}
+        {user?.userId}
+      </p>
 
-      {!data ? (
+      <button onClick={logout}>
+        Logout
+      </button>
+
+      <hr />
+
+      <WorkspaceForm
+        onCreate={handleCreate}
+      />
+
+      {workspaceError && (
+        <p>{workspaceError}</p>
+      )}
+
+      <WorkspaceList
+        workspaces={workspaces}
+        onStart={handleStart}
+        onStop={handleStop}
+        onDelete={handleDelete}
+      />
+
+      <hr />
+
+      <h2>System Status</h2>
+
+      {healthError && (
+        <p>{healthError}</p>
+      )}
+
+      {!health ? (
         <p>Loading...</p>
       ) : (
-        <div style={{ marginTop: "1rem" }}>
-          <p><strong>Status:</strong> {data.status}</p>
-          <p><strong>Message:</strong> {data.message}</p>
-          <p><strong>Version:</strong> {data.version}</p>
-        </div>
+        <>
+          <p>
+            Status: {health.status}
+          </p>
+
+          <p>
+            Message: {health.message}
+          </p>
+
+          <p>
+            Version: {health.version}
+          </p>
+        </>
       )}
     </div>
   );

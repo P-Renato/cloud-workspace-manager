@@ -1,1 +1,1 @@
-{"version":3,"file":"activityLogRepository.js","sourceRoot":"","sources":["../../src/repositories/activityLogRepository.ts"],"names":[],"mappings":""}
+{"version":3,"file":"activityLogRepository.js","sourceRoot":"","sources":["../../src/repositories/activityLogRepository.ts"],"names":[],"mappings":";;AAGA,8CAaC;AAhBD,iDAA0C;AAGnC,KAAK,UAAU,iBAAiB,CACrC,EAAU,EACV,WAAmB,EACnB,MAAsB;IAEtB,MAAM,eAAI,CAAC,KAAK,CACd;;;;KAIC,EACD,CAAC,EAAE,EAAE,WAAW,EAAE,MAAM,CAAC,CAC1B,CAAC;AACJ,CAAC"}

@@ -1,0 +1,104 @@
+import type { Workspace } from "../types/workspace";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+function getHeaders(token: string) {
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+
+export async function getWorkspaces(
+  token: string
+): Promise<Workspace[]> {
+  const response = await fetch(
+    `${API_URL}/api/workspaces`,
+    {
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load workspaces");
+  }
+
+  return response.json();
+}
+
+export async function createWorkspace(
+  token: string,
+  name: string
+) {
+  const response = await fetch(
+    `${API_URL}/api/workspaces`,
+    {
+      method: "POST",
+      headers: getHeaders(token),
+      body: JSON.stringify({
+        name,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to create workspace");
+  }
+
+  return response.json();
+}
+
+export async function deleteWorkspace(
+  token: string,
+  workspaceId: string
+) {
+  const response = await fetch(
+    `${API_URL}/api/workspaces/${workspaceId}`,
+    {
+      method: "DELETE",
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete workspace");
+  }
+}
+
+export async function startWorkspace(
+  token: string,
+  workspaceId: string
+) {
+  const response = await fetch(
+    `${API_URL}/api/workspaces/${workspaceId}/start`,
+    {
+      method: "PATCH",
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to start workspace");
+  }
+
+  return response.json();
+}
+
+export async function stopWorkspace(
+  token: string,
+  workspaceId: string
+) {
+  const response = await fetch(
+    `${API_URL}/api/workspaces/${workspaceId}/stop`,
+    {
+      method: "PATCH",
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to stop workspace");
+  }
+
+  return response.json();
+}

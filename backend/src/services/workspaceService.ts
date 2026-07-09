@@ -1,5 +1,5 @@
 import crypto from "crypto";
-
+import { NotFoundError } from "../errors/NotFoundError";
 import {
   createWorkspace as createWorkspaceRepository,
   findById,
@@ -15,17 +15,7 @@ import { createActivityLog } from "../repositories/activityLogRepository";
 
 import { Workspace } from "../types/workspace";
 
-export class WorkspaceNotFoundError extends Error {
-  constructor() {
-    super("Workspace not found");
-  }
-}
 
-export class WorkspaceAccessDeniedError extends Error {
-  constructor() {
-    super("Forbidden");
-  }
-}
 
 export async function createWorkspace(
   userId: string,
@@ -67,7 +57,7 @@ export async function startWorkspace(
     await findById(workspaceId);
 
   if (!workspace) {
-    throw new WorkspaceNotFoundError();
+    throw new NotFoundError("Workspace not found");
   }
 
   let containerId =
@@ -106,7 +96,7 @@ export async function stopWorkspace(
     await findById(workspaceId);
 
   if (!workspace) {
-    throw new WorkspaceNotFoundError();
+    throw new NotFoundError("Workspace not found");
   }
 
   if (!workspace.container_id) {
@@ -136,7 +126,7 @@ export async function deleteUserWorkspace(
     await findById(workspaceId);
 
   if (!workspace) {
-    throw new WorkspaceNotFoundError();
+    throw new NotFoundError("Workspace not found");
   }
 
   if (workspace.container_id) {
