@@ -1,16 +1,21 @@
 import crypto from "crypto";
-
+import { NotFoundError } from "../errors/NotFoundError";
 import {
   createWorkspace as createWorkspaceRepository,
   findById,
   findByUserId,
   deleteWorkspace,
   updateWorkspaceStatus,
+  updateContainerId,
 } from "../repositories/workspaceRepository";
+
+import { createContainer, startContainer, stopContainer, removeContainer, } from "./dockerService";
 
 import { createActivityLog } from "../repositories/activityLogRepository";
 
 import { Workspace } from "../types/workspace";
+
+
 
 export async function createWorkspace(
   userId: string,
@@ -45,29 +50,41 @@ export async function getWorkspaceById(
   return findById(workspaceId);
 }
 
-export async function deleteUserWorkspace(
-  workspaceId: string
-): Promise<void> {
-  await createActivityLog(
-    crypto.randomUUID(),
-    workspaceId,
-    "DELETE_WORKSPACE"
-  );
-
-  await deleteWorkspace(workspaceId);
-}
-
 export async function startWorkspace(
   workspaceId: string
 ): Promise<void> {
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  let containerId =
+    workspace.container_id;
+
+  if (!containerId) {
+    containerId =
+      await createContainer(
+        workspace.id
+      );
+
+    await updateContainerId(
+      workspace.id,
+      containerId
+    );
+  }
+
+  await startContainer(containerId);
+
   await updateWorkspaceStatus(
-    workspaceId,
+    workspace.id,
     "running"
   );
 
   await createActivityLog(
     crypto.randomUUID(),
-    workspaceId,
+    workspace.id,
     "START_WORKSPACE"
   );
 }
@@ -75,14 +92,54 @@ export async function startWorkspace(
 export async function stopWorkspace(
   workspaceId: string
 ): Promise<void> {
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  if (!workspace.container_id) {
+    return;
+  }
+
+  await stopContainer(
+    workspace.container_id
+  );
+
   await updateWorkspaceStatus(
-    workspaceId,
+    workspace.id,
     "stopped"
   );
 
   await createActivityLog(
     crypto.randomUUID(),
-    workspaceId,
+    workspace.id,
     "STOP_WORKSPACE"
   );
+}
+
+export async function deleteUserWorkspace(
+  workspaceId: string
+): Promise<void> {
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  if (workspace.container_id) {
+    await removeContainer(
+      workspace.container_id
+    );
+  }
+
+  await createActivityLog(
+    crypto.randomUUID(),
+    workspace.id,
+    "DELETE_WORKSPACE"
+  );
+
+  await deleteWorkspace(workspace.id);
 }
