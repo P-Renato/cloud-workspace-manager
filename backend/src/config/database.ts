@@ -2,9 +2,9 @@ import { Pool } from "pg";
 import { env } from "./env";
 
 export const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  database: "cloud_workspace_manager",
-  user: "cloudworkspace_app",
-  password: "cloud-workspace123",
+  host: env.DB_HOST,
+  port: env.DB_PORT,
+  database: env.DB_NAME,
+  user: env.DB_USER,
+  password: env.DB_PASSWORD,
 });
