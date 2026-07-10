@@ -62,10 +62,10 @@ Development is performed on a dedicated Ubuntu Server virtual machine using:
 - [x] Development VM created
 - [x] SSH configured
 - [x] GitHub repository configured
-- [ ] React frontend
-- [ ] Express backend
-- [ ] PostgreSQL
-- [ ] Authentication
-- [ ] Docker
+- [x] React frontend
+- [x] Express backend
+- [x] PostgreSQL
+- [x] Authentication
+- [x] Docker
 - [ ] CI/CD
 - [ ] Monitoring
