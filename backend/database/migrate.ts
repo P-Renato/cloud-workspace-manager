@@ -11,6 +11,20 @@ async function migrate() {
     .sort();
 
   for (const file of files) {
+    const alreadyApplied = await pool.query(
+      `
+      SELECT version
+      FROM schema_migrations
+      WHERE version = $1
+      `,
+      [file]
+    );
+
+    if (alreadyApplied.rowCount) {
+      console.log(`Skipping ${file}`);
+      continue;
+    }
+
     console.log(`Running ${file}`);
 
     const sql = fs.readFileSync(
@@ -18,12 +32,35 @@ async function migrate() {
       "utf8"
     );
 
-    await pool.query(sql);
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      await client.query(sql);
+
+      await client.query(
+        `
+        INSERT INTO schema_migrations (version)
+        VALUES ($1)
+        `,
+        [file]
+      );
+
+      await client.query("COMMIT");
+
+      console.log(`Applied ${file}`);
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   console.log("All migrations completed.");
 
-  process.exit();
+  await pool.end();
 }
 
 migrate().catch(err => {
