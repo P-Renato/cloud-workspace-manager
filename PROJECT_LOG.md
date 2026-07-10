@@ -116,8 +116,10 @@ Backend API tested manually using curl commands.
 * Implemented container creation using Alpine Linux images
 * Implemented workspace start and stop through Docker
 * Persisted Docker container IDs in PostgreSQL
+* Implemented container metadata retrieval using `docker inspect`
 * Implemented container removal during workspace deletion
 * Connected workspace lifecycle operations to Docker Engine
 * Verified synchronization between PostgreSQL state and container state
+* Diagnosed and resolved Docker socket permission issues on Linux
 * Tested end-to-end infrastructure management from React dashboard to Docker runtime
 * Introduced real infrastructure orchestration concepts into the application
