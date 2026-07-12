@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { env } from "../src/config/env";
+import { env } from "./config/env";
 import morgan from "morgan";
 import { testDatabaseConnection } from "./config/testDatabase";
 import workspaceRoutes from "./routes/workspaceRoutes";

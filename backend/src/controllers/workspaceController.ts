@@ -13,6 +13,7 @@ import {
   deleteUserWorkspace,
   startWorkspace,
   stopWorkspace,
+  getWorkspaceLogs,
 } from "../services/workspaceService";
 
 interface WorkspaceParams {
@@ -182,4 +183,36 @@ export const metadata = async (
     );
 
   return res.json(metadata);
+};
+
+export const logs = async (
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) => {
+  if (!req.userId) {
+    throw new UnauthorizedError();
+  }
+
+  const workspace =
+    await getWorkspaceById(
+      req.params.id
+    );
+
+  if (!workspace) {
+    throw new NotFoundError();
+  }
+
+  if (
+    workspace.user_id !==
+    req.userId
+  ) {
+    throw new ForbiddenError();
+  }
+
+  const logs =
+    await getWorkspaceLogs(
+      workspace.id
+    );
+
+  return res.json(logs);
 };
