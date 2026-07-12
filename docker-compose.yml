@@ -4,13 +4,13 @@ services:
     container_name: cwm-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: workspace_manager
-      POSTGRES_USER: workspace_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: cloud_workspace_manager
+      POSTGRES_USER: cloudworkspace_app
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudworkspace_app"]
 
   backend:
     build:
@@ -18,14 +18,23 @@ services:
     container_name: cwm-backend
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
+
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: cloud_workspace_manager
+      DB_USER: cloudworkspace_app
+      DB_PASSWORD: ${DB_PASSWORD}
+
     ports:
       - "3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
 
   frontend:
     build:

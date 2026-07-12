@@ -117,6 +117,24 @@ export default function Dashboard() {
     await loadWorkspaces();
   }
 
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    loadWorkspaces();
+
+    const interval =
+      setInterval(
+        loadWorkspaces,
+        5000
+      );
+
+    return () =>
+      clearInterval(interval);
+  }, [token]);
+
+  
   return (
     <div>
       <h1>Cloud Workspace Manager</h1>

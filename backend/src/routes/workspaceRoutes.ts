@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {create, getAll, getById, remove, start, stop, metadata, } from "../controllers/workspaceController";
+import {create, getAll, getById, remove, start, stop, metadata, logs, } from "../controllers/workspaceController";
 import { authenticate } from "../middleware/authenticate";
 import { validate } from "../middleware/validate";
 
@@ -18,6 +18,8 @@ router.get("/", getAll);
 router.get("/:id", getById);
 
 router.get("/:id/metadata", metadata);
+
+router.get("/:id/logs", logs);
 
 router.delete("/:id", remove);
 

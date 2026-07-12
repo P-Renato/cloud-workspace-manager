@@ -11,10 +11,11 @@ import {
 
 import { createContainer, startContainer, stopContainer, removeContainer, } from "./dockerService";
 
-import { createActivityLog } from "../repositories/activityLogRepository";
+import { createActivityLog, findByWorkspaceId } from "../repositories/activityLogRepository";
 
 import { Workspace } from "../types/workspace";
 
+import { ActivityLog } from "../types/activityLog";
 
 
 export async function createWorkspace(
@@ -142,4 +143,21 @@ export async function deleteUserWorkspace(
   );
 
   await deleteWorkspace(workspace.id);
+};
+
+export async function getWorkspaceLogs(
+  workspaceId: string
+): Promise<ActivityLog[]> {
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError(
+      "Workspace not found"
+    );
+  }
+
+  return findByWorkspaceId(
+    workspaceId
+  );
 }

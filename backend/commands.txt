@@ -1,0 +1,41 @@
+Login:
+curl \
+-X POST \
+-H "Content-Type: application/json" \
+-d '{
+  "email":"test@example.com",
+  "password":"password123"
+}' \
+http://localhost:3000/api/auth/login
+
+
+Register:
+curl \
+-X POST \
+-H "Content-Type: application/json" \
+-d '{
+  "email":"test@example.com",
+  "password":"password123"
+}' \
+http://localhost:3000/api/auth/register
+
+Workspaces:
+curl \
+  -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3000/api/workspaces
+
+  Create  aWorkspace:
+  curl \
+  -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name":"My First Workspace"
+  }' \
+  http://localhost:3000/api/workspaces
+
+  Start Workspace:
+  curl \
+  -X PATCH \
+  -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3000/api/workspaces/$WORKSPACE_ID/start
