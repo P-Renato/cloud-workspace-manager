@@ -56,15 +56,12 @@
 * Added authenticated workspace routes
 * Integrated workspace API with Express
 * Tested complete workspace lifecycle using curl:
+
   * Create workspace
   * List workspaces
   * Retrieve workspace
   * Delete workspace
 * Verified JWT authentication and ownership checks
-
-## Testing
-
-Backend API tested manually using curl commands.
 
 ## Session 7 – Service Layer Refactor
 
@@ -72,54 +69,115 @@ Backend API tested manually using curl commands.
 * Moved workspace business logic from controllers into services
 * Refactored controllers to depend on services instead of repositories
 * Improved separation of concerns:
+
   * Controllers handle HTTP requests and responses
   * Services contain business logic
   * Repositories manage database access
 * Performed regression testing to verify existing API functionality remained unchanged
 
-## Session 8 – Docker Workspace Runtime
+## Session 8 – Docker Infrastructure Foundation
 
-* Added Docker service abstraction
-* Implemented container creation and lifecycle management
-* Added workspace start and stop endpoints
-* Persisted Docker container IDs in PostgreSQL
-* Implemented container metadata endpoint
-* Added activity logging for workspace lifecycle events
-* Integrated Express backend with Docker daemon
-* Diagnosed and resolved Linux Docker socket permission issues
-* Learned process permissions and Docker group membership handling
+* Dockerized frontend, backend, and PostgreSQL services
+* Created `docker-compose.yml`
+* Added backend and frontend Dockerfiles
+* Configured container networking and service discovery
+* Introduced environment variable management for containers
+* Diagnosed and resolved container port conflicts
+* Learned Docker networking concepts and service communication
+* Verified multi-container application deployment
 
-## Session 9 – Workspace Lifecycle & Activity Logging
+## Session 9 – Workspace Lifecycle Management
 
-* Added `activity_logs` table and migration system support
+* Added `activity_logs` table and migration support
 * Implemented activity log repository
 * Added workspace lifecycle endpoints:
+
   * `PATCH /api/workspaces/:id/start`
   * `PATCH /api/workspaces/:id/stop`
-* Implemented workspace status transitions:
+* Implemented workspace state transitions:
+
   * `stopped → running`
   * `running → stopped`
 * Added activity logging for:
+
   * Workspace creation
   * Workspace deletion
   * Workspace start
   * Workspace stop
-* Extended service layer with workspace lifecycle business logic
-* Updated frontend API client to support start and stop operations
-* Added workspace start and stop actions to the dashboard
-* Implemented live workspace status updates in the UI
-* Verified persistence of workspace state and activity logs in PostgreSQL
+* Updated frontend dashboard with workspace lifecycle actions
+* Implemented live workspace status updates
+* Verified persistence of workspace state and activity history
 
-## Session 10 – Docker Workspace Integration
+## Session 10 – Docker Workspace Runtime
 
-* Created Docker service layer using Node.js child processes
-* Implemented container creation using Alpine Linux images
-* Implemented workspace start and stop through Docker
+* Created Docker service abstraction using Node.js child processes
+* Implemented workspace container creation using Alpine Linux images
 * Persisted Docker container IDs in PostgreSQL
 * Implemented container metadata retrieval using `docker inspect`
 * Implemented container removal during workspace deletion
-* Connected workspace lifecycle operations to Docker Engine
-* Verified synchronization between PostgreSQL state and container state
-* Diagnosed and resolved Docker socket permission issues on Linux
-* Tested end-to-end infrastructure management from React dashboard to Docker runtime
-* Introduced real infrastructure orchestration concepts into the application
+* Mounted Docker socket into backend container
+* Installed Docker CLI inside backend container
+* Enabled backend container to manage Docker Engine directly
+* Diagnosed and resolved Docker CLI and socket integration issues
+* Verified end-to-end workspace provisioning:
+
+  * React Dashboard
+  * Express API
+  * PostgreSQL persistence
+  * Docker Engine
+  * Workspace containers
+* Introduced infrastructure orchestration concepts similar to small PaaS platforms
+
+## Current Architecture
+
+React Dashboard
+↓
+Express API
+↓
+Service Layer
+↓
+PostgreSQL
+↓
+Docker Engine
+↓
+Workspace Containers
+
+## Testing
+
+* Backend API tested manually using curl commands
+* Verified workspace lifecycle operations end-to-end
+* Verified Docker container provisioning and state synchronization
+* Verified PostgreSQL persistence and migration system
+
+## Session 11 – Frontend Authentication & Docker Integration
+
+* Diagnosed frontend accessibility issues between VM, host machine, and Docker containers
+* Investigated differences between Vite development server (`npm run dev`) and Docker production preview (`npm run preview`)
+* Learned how Docker port mapping exposes the frontend on port `4173`
+* Configured frontend environment variables for API communication
+* Fixed API connectivity by updating `VITE_API_URL`
+* Diagnosed browser networking and CORS behavior
+* Verified frontend ↔ backend communication from the host machine
+* Implemented complete frontend authentication flow:
+  * User registration
+  * User login
+  * JWT persistence in localStorage
+  * Automatic authentication restoration
+  * Protected routes
+  * Logout
+* Added React Authentication Context
+* Implemented reusable API client structure
+* Verified complete authentication flow with PostgreSQL persistence
+
+## Session 12 – Workspace Details & Frontend Component Architecture
+
+### Backend
+
+* Added workspace metadata endpoint:
+  * `GET /api/workspaces/:id/metadata`
+* Added workspace activity history endpoint:
+  * `GET /api/workspaces/:id/logs`
+* Implemented service methods for:
+  * Workspace metadata retrieval
+  * Activity log retrieval
+* Added ownership validation for new workspace endpoints

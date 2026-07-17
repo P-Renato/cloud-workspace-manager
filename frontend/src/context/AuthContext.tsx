@@ -31,25 +31,38 @@ export function AuthProvider({children,}: {children: ReactNode;}) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true; 
     async function loadUser() {
       if (!token) {
-        setLoading(false);
+        if (isMounted) setLoading(false);
         return;
       }
 
       try {
         const user = await authApi.me(token);
-        setUser(user);
-      } catch {
-        localStorage.removeItem("token");
-        setToken(null);
-        setUser(null);
+        if(isMounted){
+          setUser(user);
+          console.log('User authenticated:', user);
+        }
+      } catch (e){
+        console.error('Auth check failed:', e);
+        if(isMounted){
+          localStorage.removeItem("token");
+          setToken(null);
+          setUser(null);
+        }
       } finally {
-        setLoading(false);
+        if(isMounted){
+          setLoading(false);
+          console.log('Loading set to false');
+        }
       }
     }
 
     loadUser();
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   async function login(email: string, password: string) {
@@ -71,6 +84,7 @@ export function AuthProvider({children,}: {children: ReactNode;}) {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    setLoading(false);
   }
 
   return (

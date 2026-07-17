@@ -5,15 +5,29 @@ import { Workspace } from "../types/workspace";
 export async function createWorkspace(
   id: string,
   userId: string,
-  name: string
+  name: string,
+  templateId: string,
+  image: string
 ): Promise<void> {
   await pool.query(
     `
     INSERT INTO workspaces
-    (id, user_id, name)
-    VALUES ($1, $2, $3)
+    (
+      id,
+      user_id,
+      name,
+      template_id,
+      image
+    )
+    VALUES ($1,$2,$3,$4,$5)
     `,
-    [id, userId, name]
+    [
+      id,
+      userId,
+      name,
+      templateId,
+      image,
+    ]
   );
 }
 
@@ -26,10 +40,10 @@ export async function findByUserId(
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
-      container_id,
-      created_at,
-      updated_at
+      container_id
     FROM workspaces
     WHERE user_id = $1
     ORDER BY created_at DESC
@@ -49,6 +63,8 @@ export async function findById(
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
       container_id,
       created_at,
@@ -112,6 +128,8 @@ export async function findByContainerId(
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
       container_id,
       created_at,

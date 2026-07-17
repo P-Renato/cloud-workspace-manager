@@ -20,23 +20,17 @@ import { ActivityLog } from "../types/activityLog";
 
 export async function createWorkspace(
   userId: string,
-  name: string
+  name: string,
+  templateId: string,
+  image: string
 ): Promise<Pick<Workspace, "id" | "name" | "status">> {
   const id = crypto.randomUUID();
 
-  await createWorkspaceRepository(id, userId, name);
+  await createWorkspaceRepository(id, userId, name, templateId, image);
 
-  await createActivityLog(
-    crypto.randomUUID(),
-    id,
-    "CREATE_WORKSPACE"
-  );
+  await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
 
-  return {
-    id,
-    name,
-    status: "stopped",
-  };
+  return { id, name, status: "stopped",};
 }
 
 export async function getUserWorkspaces(
@@ -67,7 +61,8 @@ export async function startWorkspace(
   if (!containerId) {
     containerId =
       await createContainer(
-        workspace.id
+        workspace.id,
+        workspace.image
       );
 
     await updateContainerId(

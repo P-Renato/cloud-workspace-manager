@@ -2,21 +2,37 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "../context/AuthContext";
 
-import { getHealth, type HealthResponse } from "../api/health";
+import {
+  getHealth,
+  type HealthResponse,
+} from "../api/health";
 
-import { getWorkspaces, createWorkspace, deleteWorkspace, startWorkspace, stopWorkspace,} from "../api/workspaces";
+import {
+  getWorkspaces,
+  createWorkspace,
+  deleteWorkspace,
+  startWorkspace,
+  stopWorkspace,
+} from "../api/workspaces";
 
 import type { Workspace } from "../types/workspace";
 
+import DashboardHeader from "../components/DashboardHeader";
 import WorkspaceForm from "../components/WorkspaceForm";
 import WorkspaceList from "../components/WorkspaceList";
+import SystemStatus from "../components/SystemStatus";
 
 export default function Dashboard() {
-  const { user, token, logout } =
-    useAuth();
+  const {
+    user,
+    token,
+    logout,
+  } = useAuth();
 
   const [health, setHealth] =
-    useState<HealthResponse | null>(null);
+    useState<HealthResponse | null>(
+      null
+    );
 
   const [healthError, setHealthError] =
     useState<string | null>(null);
@@ -35,15 +51,7 @@ export default function Dashboard() {
       );
   }, []);
 
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-
-    loadWorkspaces();
-  }, [token]);
-
-  async function loadWorkspaces() {
+  async function refreshWorkspaces() {
     if (!token) {
       return;
     }
@@ -55,10 +63,29 @@ export default function Dashboard() {
       setWorkspaces(data);
     } catch (err) {
       if (err instanceof Error) {
-        setWorkspaceError(err.message);
+        setWorkspaceError(
+          err.message
+        );
       }
     }
   }
+
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    refreshWorkspaces();
+
+    const interval =
+      setInterval(
+        refreshWorkspaces,
+        5000
+      );
+
+    return () =>
+      clearInterval(interval);
+  }, [token]);
 
   async function handleCreate(
     name: string
@@ -67,9 +94,12 @@ export default function Dashboard() {
       return;
     }
 
-    await createWorkspace(token, name);
+    await createWorkspace(
+      token,
+      name
+    );
 
-    await loadWorkspaces();
+    await refreshWorkspaces();
   }
 
   async function handleStart(
@@ -84,7 +114,7 @@ export default function Dashboard() {
       workspaceId
     );
 
-    await loadWorkspaces();
+    await refreshWorkspaces();
   }
 
   async function handleStop(
@@ -99,7 +129,7 @@ export default function Dashboard() {
       workspaceId
     );
 
-    await loadWorkspaces();
+    await refreshWorkspaces();
   }
 
   async function handleDelete(
@@ -114,41 +144,15 @@ export default function Dashboard() {
       workspaceId
     );
 
-    await loadWorkspaces();
+    await refreshWorkspaces();
   }
 
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-
-    loadWorkspaces();
-
-    const interval =
-      setInterval(
-        loadWorkspaces,
-        5000
-      );
-
-    return () =>
-      clearInterval(interval);
-  }, [token]);
-
-  
   return (
     <div>
-      <h1>Cloud Workspace Manager</h1>
-
-      <p>
-        <strong>User ID:</strong>{" "}
-        {user?.userId}
-      </p>
-
-      <button onClick={logout}>
-        Logout
-      </button>
-
-      <hr />
+      <DashboardHeader
+        userId={user?.userId}
+        onLogout={logout}
+      />
 
       <WorkspaceForm
         onCreate={handleCreate}
@@ -165,31 +169,10 @@ export default function Dashboard() {
         onDelete={handleDelete}
       />
 
-      <hr />
-
-      <h2>System Status</h2>
-
-      {healthError && (
-        <p>{healthError}</p>
-      )}
-
-      {!health ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <p>
-            Status: {health.status}
-          </p>
-
-          <p>
-            Message: {health.message}
-          </p>
-
-          <p>
-            Version: {health.version}
-          </p>
-        </>
-      )}
+      <SystemStatus
+        health={health}
+        error={healthError}
+      />
     </div>
   );
 }

@@ -36,3 +36,4 @@ export async function createActivityLog(
     [id, workspaceId, action]
   );
 }
+

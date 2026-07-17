@@ -1,4 +1,8 @@
 import type { Workspace } from "../types/workspace";
+import { useNavigate } from "react-router-dom";
+import StatusBadge from "./StatusBadge";
+
+
 
 interface WorkspaceListProps {
   workspaces: Workspace[];
@@ -19,6 +23,8 @@ export default function WorkspaceList({
   onStop,
   onDelete,
 }: WorkspaceListProps) {
+  const navigate = useNavigate();
+
   if (workspaces.length === 0) {
     return <p>No workspaces found.</p>;
   }
@@ -28,44 +34,79 @@ export default function WorkspaceList({
       <h2>Your Workspaces</h2>
 
       {workspaces.map((workspace) => (
-        <div key={workspace.id}>
+      <div
+        key={workspace.id}
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: 12,
+          padding: 20,
+          marginBottom: 20,
+          background: "#fff",
+          gap: 20,
+          justifyContent: "center",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column"
+
+        }}
+      >
           <p>
             <strong>Name:</strong>{" "}
             {workspace.name}
           </p>
 
           <p>
-            <strong>Status:</strong>{" "}
-            {workspace.status}
+            <StatusBadge
+              status={workspace.status}
+            />
           </p>
 
-          {workspace.status === "stopped" ? (
-            <button
-              onClick={() =>
-                onStart(workspace.id)
-              }
-            >
-              Start
-            </button>
-          ) : (
-            <button
-              onClick={() =>
-                onStop(workspace.id)
-              }
-            >
-              Stop
-            </button>
-          )}
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              gap: 10,
+              marginTop: 16,
 
-          <button
-            onClick={() =>
-              onDelete(workspace.id)
-            }
+            }}
           >
-            Delete
-          </button>
 
-          <hr />
+
+            {workspace.status === "stopped" ? (
+              <button
+                onClick={() =>
+                  onStart(workspace.id)
+                }
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={() =>
+                  onStop(workspace.id)
+                }
+              >
+                Stop
+              </button>
+            )}
+
+              <button
+              onClick={()=> navigate(`/workspaces/${workspace.id}`)}>
+                Details
+              </button>
+            
+            
+
+            <button
+              onClick={() =>
+                onDelete(workspace.id)
+              }
+            >
+              Delete
+            </button>
+
+          </div>
         </div>
       ))}
     </div>

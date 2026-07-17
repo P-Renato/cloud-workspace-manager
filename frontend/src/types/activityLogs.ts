@@ -10,3 +10,11 @@ export interface ActivityLog {
   action: ActivityAction;
   created_at: string;
 }
+
+export interface ContainerMetadata {
+  id: string;
+  image: string;
+  created: string;
+  state: string;
+  startedAt: string;
+}

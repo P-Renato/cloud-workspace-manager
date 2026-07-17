@@ -21,7 +21,7 @@ interface WorkspaceParams {
 }
 
 export const create = async (
-  req: AuthRequest<ParamsDictionary, unknown, { name: string }>,
+  req: AuthRequest<ParamsDictionary, unknown, { name: string; templateId: string; image: string }>,
   res: Response
 ) => {
   if (!req.userId) {
@@ -30,7 +30,9 @@ export const create = async (
 
   const workspace = await createWorkspace(
     req.userId,
-    req.body.name
+    req.body.name,
+    req.body.templateId,
+    req.body.image
   );
 
   return res.status(201).json(workspace);
