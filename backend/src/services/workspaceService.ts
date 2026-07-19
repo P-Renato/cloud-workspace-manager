@@ -13,42 +13,66 @@ import { createContainer, startContainer, stopContainer, removeContainer, } from
 
 import { createActivityLog, findByWorkspaceId } from "../repositories/activityLogRepository";
 
-import { Workspace } from "../types/workspace";
+import { Workspace, WorkspaceStatus } from "../types/workspace";
 
 import { ActivityLog } from "../types/activityLog";
+
+import { BadRequestError } from "../errors/BadRequestError";
+
+import { WORKSPACE_TEMPLATES } from "../config/workspaceTemplates";
+
+import { getContainerStatus } from "./dockerService";
+import { mapDockerStatus } from "./dockerStatusMapper";
 
 
 export async function createWorkspace(
   userId: string,
-  name: string
+  name: string,
+  templateId: string,
 ): Promise<Pick<Workspace, "id" | "name" | "status">> {
+  const template = WORKSPACE_TEMPLATES[templateId];
+
+  if (!template) {
+      throw new BadRequestError("Invalid workspace template");
+  }
+
   const id = crypto.randomUUID();
 
-  await createWorkspaceRepository(id, userId, name);
+  await createWorkspaceRepository(id, userId, name, template.id, template.image);
 
-  await createActivityLog(
-    crypto.randomUUID(),
-    id,
-    "CREATE_WORKSPACE"
-  );
+  await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
 
-  return {
-    id,
-    name,
-    status: "stopped",
-  };
+  return { id, name, status: "stopped",};
 }
 
 export async function getUserWorkspaces(
   userId: string
 ): Promise<Workspace[]> {
+
+  const workspaces =
+    await findByUserId(userId);
+
+  for (const workspace of workspaces) {
+    await syncWorkspaceStatus(workspace.id);
+  }
+
   return findByUserId(userId);
 }
 
 export async function getWorkspaceById(
   workspaceId: string
 ): Promise<Workspace | null> {
-  return findById(workspaceId);
+
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    return null;
+  }
+
+  await syncWorkspaceStatus(workspace.id);
+
+  return findById(workspace.id);
 }
 
 export async function startWorkspace(
@@ -65,10 +89,7 @@ export async function startWorkspace(
     workspace.container_id;
 
   if (!containerId) {
-    containerId =
-      await createContainer(
-        workspace.id
-      );
+    containerId = await createContainer(workspace.id, workspace.image);
 
     await updateContainerId(
       workspace.id,
@@ -160,4 +181,39 @@ export async function getWorkspaceLogs(
   return findByWorkspaceId(
     workspaceId
   );
+}
+
+export async function syncWorkspaceStatus(
+  workspaceId: string
+): Promise<WorkspaceStatus> {
+
+  const workspace = await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  if (!workspace.container_id) {
+    await updateWorkspaceStatus(
+      workspace.id,
+      "stopped"
+    );
+
+    return "stopped";
+  }
+
+  const dockerStatus =
+    await getContainerStatus(
+      workspace.container_id
+    );
+
+  const status =
+    mapDockerStatus(dockerStatus);
+
+  await updateWorkspaceStatus(
+    workspace.id,
+    status
+  );
+
+  return status;
 }

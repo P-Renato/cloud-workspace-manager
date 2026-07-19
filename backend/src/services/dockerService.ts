@@ -5,13 +5,14 @@ import { ContainerMetadata } from "../types/containerMetadata";
 const execAsync = promisify(exec);
 
 export async function createContainer(
-  workspaceId: string
+  workspaceId: string,
+  image: string
 ): Promise<string> {
   const containerName =
     `workspace-${workspaceId}`;
 
   const { stdout } = await execAsync(
-    `docker create --name ${containerName} alpine:latest sleep infinity`
+    `docker create --name ${containerName} ${image} sleep infinity`
   );
 
   return stdout.trim();
@@ -65,4 +66,14 @@ export async function getContainerMetadata(
     createdAt:
       container.Created,
   };
+}
+
+export async function getContainerStatus(
+  containerId: string
+): Promise<string> {
+  const { stdout } = await execAsync(
+    `docker inspect --format='{{.State.Status}}' ${containerId}`
+  );
+
+  return stdout.trim();
 }

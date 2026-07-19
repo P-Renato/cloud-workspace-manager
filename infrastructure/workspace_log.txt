@@ -1,0 +1,200 @@
+# Cloud Workspace Manager
+
+```
+Cloud Workspace Manager
+│
+├── Authentication
+│   ├── Register user
+│   ├── Login user
+│   ├── JWT generation
+│   ├── JWT verification
+│   └── Protected routes
+│
+├── Database Layer
+│   ├── PostgreSQL
+│   ├── Connection pool
+│   ├── SQL migrations
+│   ├── Migration tracking
+│   └── Repository pattern
+│
+├── Workspace Management
+│   ├── Create workspace
+│   ├── List workspaces
+│   ├── Get workspace
+│   ├── Delete workspace
+│   ├── Start workspace
+│   ├── Stop workspace
+│   ├── Workspace metadata
+│   └── Activity history
+│
+├── Workspace Templates
+│   ├── Alpine Linux
+│   ├── Ubuntu
+│   ├── Node.js 22
+│   └── Python 3.12
+│
+├── Docker Integration
+│   ├── Create container
+│   ├── Start container
+│   ├── Stop container
+│   ├── Remove container
+│   ├── Inspect container
+│   └── Runtime image selection
+│
+├── Activity Logging
+│   ├── CREATE_WORKSPACE
+│   ├── START_WORKSPACE
+│   ├── STOP_WORKSPACE
+│   └── DELETE_WORKSPACE
+│
+├── Frontend
+│   ├── Register page
+│   ├── Login page
+│   ├── Dashboard
+│   ├── Workspace creation
+│   ├── Workspace list
+│   ├── Workspace details
+│   ├── Metadata view
+│   ├── Activity history
+│   ├── Start / Stop actions
+│   └── Delete workspace
+│
+└── Infrastructure
+    ├── Docker Compose
+    ├── Backend container
+    ├── Frontend container
+    ├── PostgreSQL container
+    ├── Docker socket integration
+    └── Persistent database volume
+```
+
+---
+
+# Architecture
+
+```
+React Frontend
+        │
+        │ HTTP + JWT
+        ▼
+Express API
+        │
+        ▼
+Controller Layer
+        │
+        ▼
+Service Layer
+        │
+        ├───────────────┐
+        ▼               ▼
+Repository Layer   Docker Service
+        │               │
+        ▼               ▼
+ PostgreSQL       Docker Engine
+                          │
+                          ▼
+                 Workspace Containers
+```
+
+---
+
+# Current Capabilities
+
+```
+Register
+    ↓
+Login
+    ↓
+Browse Templates
+    ↓
+Create Workspace
+    ↓
+Workspace Stored
+    ↓
+Start Workspace
+    ↓
+Docker Container Created
+    ↓
+View Metadata
+    ↓
+View Activity History
+    ↓
+Stop Workspace
+    ↓
+Delete Workspace
+```
+
+---
+
+# Roadmap
+
+## ✅ Phase 1 — Backend Foundation
+
+- Authentication
+- PostgreSQL
+- SQL Migrations
+- Repository Pattern
+- Service Layer
+- Workspace CRUD
+- Docker Integration
+- Activity Logging
+- Workspace Metadata
+- Workspace History
+- Workspace Templates
+
+---
+
+## 🚧 Phase 2 — Dashboard Improvements
+
+### Workspace Dashboard
+
+- Better cards
+- Status badges
+- Loading states
+- Empty states
+- Error handling
+- Search
+- Filtering
+- Sorting
+
+### Statistics
+
+- Total workspaces
+- Running workspaces
+- Stopped workspaces
+- Template usage
+
+---
+
+## Phase 3 — Resource Monitoring
+
+- CPU usage
+- Memory usage
+- Disk usage
+- Network usage
+- Container uptime
+- Live container statistics
+
+---
+
+## Phase 4 — Interactive Workspaces
+
+- Open terminal
+- Execute commands
+- File browser
+- Upload/download files
+- Container logs
+- Restart workspace
+
+---
+
+## Phase 5 — Cloud Features
+
+- Workspace limits
+- User quotas
+- Auto shutdown
+- Persistent volumes
+- Snapshot support
+- Workspace cloning
+- Admin dashboard
+- Usage analytics

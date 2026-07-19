@@ -5,7 +5,7 @@ import { env } from "./config/env";
 import morgan from "morgan";
 import { testDatabaseConnection } from "./config/testDatabase";
 import workspaceRoutes from "./routes/workspaceRoutes";
-
+import workspaceTemplateRoutes from "./routes/workspaceTemplateRoutes";
 import healthRoutes from "./routes/healthRoutes";
 import authRoutes from "./routes/authRoutes"
 import { errorHandler } from "./middleware/errorHandler";
@@ -21,6 +21,7 @@ app.use(morgan("dev"));
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/workspaces", workspaceRoutes);
+app.use("/api/workspace-templates", workspaceTemplateRoutes);
 app.use(errorHandler)
 testDatabaseConnection();
 

@@ -9,6 +9,19 @@ curl \
 http://localhost:3000/api/auth/login
 
 
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email":"template@exa.com",
+    "password":"template123"
+  }' \
+  http://localhost:3000/api/auth/login
+
+  "email":"template@exa.com",
+  "password":"template123"
+
+
 Register:
 curl \
 -X POST \
@@ -24,7 +37,7 @@ curl \
   -H "Authorization: Bearer $TOKEN" \
   http://localhost:3000/api/workspaces
 
-  Create  aWorkspace:
+Create  aWorkspace:
   curl \
   -X POST \
   -H "Authorization: Bearer $TOKEN" \
@@ -34,8 +47,49 @@ curl \
   }' \
   http://localhost:3000/api/workspaces
 
+curl \
+  -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name":"My First template"
+  }' \
+  http://localhost:3000/api/workspaces
+
   Start Workspace:
   curl \
   -X PATCH \
   -H "Authorization: Bearer $TOKEN" \
   http://localhost:3000/api/workspaces/$WORKSPACE_ID/start
+
+
+
+  Repository Layout
+
+  cloud-workspace-manager/
+│
+├── frontend/
+├── backend/
+├── infrastructure/
+│   ├── docker/
+│   ├── nginx/
+│   └── scripts/
+├── docs/
+├── .github/
+│   └── workflows/
+└── README.md
+
+When application grows
+
+Internet
+      │
+      ▼
+Application VM
+├── React
+├── Node.js
+└── Nginx
+      │
+      │ Private Network
+      ▼
+Database VM
+└── PostgreSQL

@@ -14,6 +14,7 @@ import {
   startWorkspace,
   stopWorkspace,
   getWorkspaceLogs,
+  syncWorkspaceStatus
 } from "../services/workspaceService";
 
 interface WorkspaceParams {
@@ -21,7 +22,7 @@ interface WorkspaceParams {
 }
 
 export const create = async (
-  req: AuthRequest<ParamsDictionary, unknown, { name: string }>,
+  req: AuthRequest<ParamsDictionary, unknown, { name: string; templateId: string }>,
   res: Response
 ) => {
   if (!req.userId) {
@@ -30,7 +31,8 @@ export const create = async (
 
   const workspace = await createWorkspace(
     req.userId,
-    req.body.name
+    req.body.name,
+    req.body.templateId,
   );
 
   return res.status(201).json(workspace);
@@ -144,6 +146,31 @@ export const stop = async (
 
   return res.json({
     message: "Workspace stopped",
+  });
+};
+
+export const syncStatus = async (
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) => {
+  if (!req.userId) {
+    throw new UnauthorizedError();
+  }
+
+  const workspace = await getWorkspaceById(req.params.id);
+
+  if (!workspace) {
+    throw new NotFoundError();
+  }
+
+  if (workspace.user_id !== req.userId) {
+    throw new ForbiddenError();
+  }
+
+  const status = await syncWorkspaceStatus(workspace.id);
+
+  return res.json({
+    status,
   });
 };
 

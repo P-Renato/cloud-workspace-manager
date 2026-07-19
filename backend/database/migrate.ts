@@ -25,6 +25,7 @@ async function migrate() {
       `,
       [file]
     );
+    console.log(file, alreadyApplied.rows);
 
     if (alreadyApplied.rowCount) {
       console.log(`Skipping ${file}`);
@@ -37,6 +38,11 @@ async function migrate() {
       path.join(migrationsPath, file),
       "utf8"
     );
+
+    console.log("\n===== MIGRATION FILE =====");
+    console.log(file);
+    console.log(sql);
+    console.log("==========================\n");
 
     const client = await pool.connect();
 
