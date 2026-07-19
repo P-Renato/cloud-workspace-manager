@@ -67,3 +67,13 @@ export async function getContainerMetadata(
       container.Created,
   };
 }
+
+export async function getContainerStatus(
+  containerId: string
+): Promise<string> {
+  const { stdout } = await execAsync(
+    `docker inspect --format='{{.State.Status}}' ${containerId}`
+  );
+
+  return stdout.trim();
+}

@@ -1,3 +1,6 @@
+# Cloud Workspace Manager
+
+```
 Cloud Workspace Manager
 │
 ├── Authentication
@@ -20,14 +23,23 @@ Cloud Workspace Manager
 │   ├── Get workspace
 │   ├── Delete workspace
 │   ├── Start workspace
-│   └── Stop workspace
+│   ├── Stop workspace
+│   ├── Workspace metadata
+│   └── Activity history
+│
+├── Workspace Templates
+│   ├── Alpine Linux
+│   ├── Ubuntu
+│   ├── Node.js 22
+│   └── Python 3.12
 │
 ├── Docker Integration
 │   ├── Create container
 │   ├── Start container
 │   ├── Stop container
 │   ├── Remove container
-│   └── Inspect container
+│   ├── Inspect container
+│   └── Runtime image selection
 │
 ├── Activity Logging
 │   ├── CREATE_WORKSPACE
@@ -38,104 +50,151 @@ Cloud Workspace Manager
 ├── Frontend
 │   ├── Register page
 │   ├── Login page
-│   ├── Dashboard page
-│   ├── Workspace creation form
+│   ├── Dashboard
+│   ├── Workspace creation
 │   ├── Workspace list
-│   ├── Start workspace button
-│   ├── Stop workspace button
-│   └── Delete workspace button
+│   ├── Workspace details
+│   ├── Metadata view
+│   ├── Activity history
+│   ├── Start / Stop actions
+│   └── Delete workspace
 │
 └── Infrastructure
     ├── Docker Compose
     ├── Backend container
     ├── Frontend container
     ├── PostgreSQL container
+    ├── Docker socket integration
     └── Persistent database volume
+```
 
-Architecture
+---
 
+# Architecture
+
+```
 React Frontend
-      │
-      │ HTTP + JWT
-      ▼
+        │
+        │ HTTP + JWT
+        ▼
 Express API
-      │
-      ├── PostgreSQL
-      │
-      └── Docker Engine
-              │
-              └── Workspace Containers
+        │
+        ▼
+Controller Layer
+        │
+        ▼
+Service Layer
+        │
+        ├───────────────┐
+        ▼               ▼
+Repository Layer   Docker Service
+        │               │
+        ▼               ▼
+ PostgreSQL       Docker Engine
+                          │
+                          ▼
+                 Workspace Containers
+```
 
-What it can do today
+---
 
+# Current Capabilities
+
+```
 Register
     ↓
 Login
     ↓
-Open Dashboard
+Browse Templates
     ↓
 Create Workspace
     ↓
+Workspace Stored
+    ↓
 Start Workspace
     ↓
-Docker Container is created
+Docker Container Created
+    ↓
+View Metadata
+    ↓
+View Activity History
     ↓
 Stop Workspace
     ↓
 Delete Workspace
+```
 
-Steps: 
+---
 
-Phase 1
-✓ Authentication
-✓ Database
-✓ Migrations
-✓ CRUD
-✓ Docker Integration
-✓ Activity Logging
-──────────────────────────
-NEXT:
-→ Improve Dashboard UX
+# Roadmap
 
-Dashboard Improvements
-│
-├── Workspace Details Page
-│     ├── Metadata
-│     ├── Activity History
-│     ├── Container Information
-│     └── Better navigation
-│
-├── Dashboard Statistics
-│     ├── Total workspaces
-│     ├── Running workspaces
-│     └── Stopped workspaces
-│
-└── Better UI
-      ├── Cards
-      ├── Status badges
-      ├── Loading states
-      └── Error messages
+## ✅ Phase 1 — Backend Foundation
 
-Later phases:
+- Authentication
+- PostgreSQL
+- SQL Migrations
+- Repository Pattern
+- Service Layer
+- Workspace CRUD
+- Docker Integration
+- Activity Logging
+- Workspace Metadata
+- Workspace History
+- Workspace Templates
 
-Phase 2
-→ Workspace Templates
-   ├── Alpine
-   ├── Node.js
-   ├── Python
-   └── Ubuntu
+---
 
-Phase 3
-→ Resource Monitoring
-   ├── CPU usage
-   ├── Memory usage
-   ├── Uptime
-   └── Container statistics
+## 🚧 Phase 2 — Dashboard Improvements
 
-Phase 4
-→ Real Cloud Features
-   ├── Workspace limits
-   ├── User quotas
-   ├── Auto shutdown
-   ├── Container persistence
-   └── Admin dashboard
+### Workspace Dashboard
+
+- Better cards
+- Status badges
+- Loading states
+- Empty states
+- Error handling
+- Search
+- Filtering
+- Sorting
+
+### Statistics
+
+- Total workspaces
+- Running workspaces
+- Stopped workspaces
+- Template usage
+
+---
+
+## Phase 3 — Resource Monitoring
+
+- CPU usage
+- Memory usage
+- Disk usage
+- Network usage
+- Container uptime
+- Live container statistics
+
+---
+
+## Phase 4 — Interactive Workspaces
+
+- Open terminal
+- Execute commands
+- File browser
+- Upload/download files
+- Container logs
+- Restart workspace
+
+---
+
+## Phase 5 — Cloud Features
+
+- Workspace limits
+- User quotas
+- Auto shutdown
+- Persistent volumes
+- Snapshot support
+- Workspace cloning
+- Admin dashboard
+- Usage analytics

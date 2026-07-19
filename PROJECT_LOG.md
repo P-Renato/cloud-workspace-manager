@@ -181,3 +181,72 @@ Workspace Containers
   * Workspace metadata retrieval
   * Activity log retrieval
 * Added ownership validation for new workspace endpoints
+
+### Frontend
+
+* Created reusable workspace detail components
+* Displayed workspace metadata and activity history
+* Improved dashboard organization and component structure
+* Verified end-to-end retrieval of workspace metadata and logs
+
+## Session 13 – Workspace Templates & Runtime Images
+
+### Backend
+
+* Introduced workspace template configuration
+* Added `workspaceTemplates.ts` as the central source of available runtimes
+* Implemented workspace template endpoint:
+  * `GET /api/workspace-templates`
+* Refactored workspace creation to accept `templateId` instead of exposing Docker images through the public API
+* Mapped template IDs to Docker images on the server side
+* Preserved the Docker image reference in the database for runtime provisioning
+* Updated Docker container creation to launch the image associated with each template
+* Added validation for invalid template identifiers
+* Improved service layer responsibilities by separating user input from infrastructure details
+
+### Docker
+
+* Successfully provisioned workspaces using multiple runtime images:
+  * Alpine Linux
+  * Node.js 22
+* Verified correct Docker image selection during workspace startup
+* Confirmed container creation, start, stop and deletion continue functioning after template refactor
+
+### Testing
+
+* Tested workspace template endpoint with curl
+* Verified workspace creation using template IDs
+* Verified Docker image persistence in PostgreSQL
+* Verified end-to-end workspace lifecycle after template implementation
+* Diagnosed and resolved stale container ID issues after Docker environment resets
+
+## Current Architecture
+
+React Dashboard
+↓
+Express API
+↓
+Controllers
+↓
+Service Layer
+↓
+Repositories
+↓
+PostgreSQL
+↓
+Docker Engine
+↓
+Workspace Containers
+
+## Testing
+
+* Backend API tested manually using curl
+* Verified authentication flow
+* Verified workspace CRUD operations
+* Verified workspace lifecycle operations
+* Verified Docker container provisioning
+* Verified workspace template selection
+* Verified PostgreSQL persistence
+* Verified activity logging
+* Verified metadata retrieval
+* Verified migration system

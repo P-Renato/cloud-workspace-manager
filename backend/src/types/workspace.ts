@@ -1,7 +1,10 @@
 export type WorkspaceStatus =
-  | "stopped"
-  | "running"
-  | "error";
+    | "creating"
+    | "starting"
+    | "running"
+    | "stopping"
+    | "stopped"
+    | "error";
 
 export interface Workspace {
   id: string;

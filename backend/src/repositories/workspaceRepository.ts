@@ -26,7 +26,7 @@ export async function createWorkspace(
       userId,
       name,
       templateId,
-      image,
+      image
     ]
   );
 }
