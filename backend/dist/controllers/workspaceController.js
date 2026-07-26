@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.metadata = exports.stop = exports.start = exports.remove = exports.getById = exports.getAll = exports.create = void 0;
+exports.logs = exports.metadata = exports.syncStatus = exports.stop = exports.start = exports.remove = exports.getById = exports.getAll = exports.create = void 0;
+exports.stats = stats;
 const UnauthorizedError_1 = require("../errors/UnauthorizedError");
 const ForbiddenError_1 = require("../errors/ForbiddenError");
 const NotFoundError_1 = require("../errors/NotFoundError");
@@ -10,7 +11,7 @@ const create = async (req, res) => {
     if (!req.userId) {
         throw new UnauthorizedError_1.UnauthorizedError();
     }
-    const workspace = await (0, workspaceService_1.createWorkspace)(req.userId, req.body.name);
+    const workspace = await (0, workspaceService_1.createWorkspace)(req.userId, req.body.name, req.body.templateId);
     return res.status(201).json(workspace);
 };
 exports.create = create;
@@ -85,6 +86,23 @@ const stop = async (req, res) => {
     });
 };
 exports.stop = stop;
+const syncStatus = async (req, res) => {
+    if (!req.userId) {
+        throw new UnauthorizedError_1.UnauthorizedError();
+    }
+    const workspace = await (0, workspaceService_1.getWorkspaceById)(req.params.id);
+    if (!workspace) {
+        throw new NotFoundError_1.NotFoundError();
+    }
+    if (workspace.user_id !== req.userId) {
+        throw new ForbiddenError_1.ForbiddenError();
+    }
+    const status = await (0, workspaceService_1.syncWorkspaceStatus)(workspace.id);
+    return res.json({
+        status,
+    });
+};
+exports.syncStatus = syncStatus;
 const metadata = async (req, res) => {
     if (!req.userId) {
         throw new UnauthorizedError_1.UnauthorizedError();
@@ -104,4 +122,29 @@ const metadata = async (req, res) => {
     return res.json(metadata);
 };
 exports.metadata = metadata;
+const logs = async (req, res) => {
+    if (!req.userId) {
+        throw new UnauthorizedError_1.UnauthorizedError();
+    }
+    const workspace = await (0, workspaceService_1.getWorkspaceById)(req.params.id);
+    if (!workspace) {
+        throw new NotFoundError_1.NotFoundError();
+    }
+    if (workspace.user_id !==
+        req.userId) {
+        throw new ForbiddenError_1.ForbiddenError();
+    }
+    const logs = await (0, workspaceService_1.getWorkspaceLogs)(workspace.id);
+    return res.json(logs);
+};
+exports.logs = logs;
+async function stats(req, res, next) {
+    try {
+        const data = await (0, workspaceService_1.getWorkspaceStats)(req.params.id);
+        res.json(data);
+    }
+    catch (err) {
+        next(err);
+    }
+}
 //# sourceMappingURL=workspaceController.js.map

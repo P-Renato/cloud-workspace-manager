@@ -13,6 +13,7 @@ import { errorHandler } from "./middleware/errorHandler";
 dotenv.config();
 
 const app = express();
+console.log("========== MY SERVER STARTED ==========");
 
 app.use(cors());
 app.use(express.json());
@@ -26,6 +27,11 @@ app.use(errorHandler)
 testDatabaseConnection();
 
 const PORT = env.PORT || 3000;
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

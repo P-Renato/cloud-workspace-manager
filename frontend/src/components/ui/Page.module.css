@@ -1,0 +1,9 @@
+.page {
+  width: min(1100px, 100%);
+
+  margin: 0 auto;
+
+  padding: 2rem;
+
+  box-sizing: border-box;
+}

@@ -1,4 +1,8 @@
 import type { Workspace } from "../types/workspace";
+
+import Card from "./ui/Card";
+import SectionTitle from "./ui/SectionTitle";
+
 import StatusBadge from "./StatusBadge";
 
 interface WorkspaceInfoProps {
@@ -9,16 +13,10 @@ export default function WorkspaceInfo({
   workspace,
 }: WorkspaceInfoProps) {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 20,
-        marginBottom: 24,
-        background: "#fff",
-      }}
-    >
-      <h2>Workspace</h2>
+    <Card>
+      <SectionTitle>
+        Workspace
+      </SectionTitle>
 
       <p>
         <strong>Name:</strong> {workspace.name}
@@ -41,11 +39,11 @@ export default function WorkspaceInfo({
       </p>
 
       <p>
-        <strong>Last Updated:</strong>{" "}
+        <strong>Updated:</strong>{" "}
         {new Date(
           workspace.updated_at
         ).toLocaleString()}
       </p>
-    </div>
+    </Card>
   );
 }

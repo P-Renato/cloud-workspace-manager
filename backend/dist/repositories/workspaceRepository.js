@@ -8,12 +8,24 @@ exports.updateWorkspaceStatus = updateWorkspaceStatus;
 exports.updateContainerId = updateContainerId;
 exports.findByContainerId = findByContainerId;
 const database_1 = require("../config/database");
-async function createWorkspace(id, userId, name) {
+async function createWorkspace(id, userId, name, templateId, image) {
     await database_1.pool.query(`
     INSERT INTO workspaces
-    (id, user_id, name)
-    VALUES ($1, $2, $3)
-    `, [id, userId, name]);
+    (
+      id,
+      user_id,
+      name,
+      template_id,
+      image
+    )
+    VALUES ($1,$2,$3,$4,$5)
+    `, [
+        id,
+        userId,
+        name,
+        templateId,
+        image
+    ]);
 }
 async function findByUserId(userId) {
     const result = await database_1.pool.query(`
@@ -21,10 +33,10 @@ async function findByUserId(userId) {
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
-      container_id,
-      created_at,
-      updated_at
+      container_id
     FROM workspaces
     WHERE user_id = $1
     ORDER BY created_at DESC
@@ -37,6 +49,8 @@ async function findById(id) {
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
       container_id,
       created_at,
@@ -74,6 +88,8 @@ async function findByContainerId(containerId) {
       id,
       user_id,
       name,
+      template_id,
+      image,
       status,
       container_id,
       created_at,

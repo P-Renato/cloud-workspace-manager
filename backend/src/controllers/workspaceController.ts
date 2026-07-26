@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ParamsDictionary } from "express-serve-static-core";
+import { NextFunction, ParamsDictionary } from "express-serve-static-core";
 import { UnauthorizedError } from "../errors/UnauthorizedError";
 import { AuthRequest } from "../middleware/authenticate";
 import { ForbiddenError } from "../errors/ForbiddenError";
@@ -14,7 +14,8 @@ import {
   startWorkspace,
   stopWorkspace,
   getWorkspaceLogs,
-  syncWorkspaceStatus
+  syncWorkspaceStatus,
+  getWorkspaceStats
 } from "../services/workspaceService";
 
 interface WorkspaceParams {
@@ -243,3 +244,12 @@ export const logs = async (
 
   return res.json(logs);
 };
+
+export async function stats(
+  req: AuthRequest<WorkspaceParams>,
+  res: Response
+) {
+  return res.json({
+    message: "Stats endpoint reached"
+  });
+}

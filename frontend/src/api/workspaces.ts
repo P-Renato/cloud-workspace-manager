@@ -29,7 +29,8 @@ export async function getWorkspaces(
 
 export async function createWorkspace(
   token: string,
-  name: string
+  name: string,
+  templateId: string
 ) {
   const response = await fetch(
     `${API_URL}/api/workspaces`,
@@ -38,6 +39,7 @@ export async function createWorkspace(
       headers: getHeaders(token),
       body: JSON.stringify({
         name,
+        templateId
       }),
     }
   );

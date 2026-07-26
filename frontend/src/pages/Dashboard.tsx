@@ -29,19 +29,13 @@ export default function Dashboard() {
     logout,
   } = useAuth();
 
-  const [health, setHealth] =
-    useState<HealthResponse | null>(
-      null
-    );
+  const [health, setHealth] = useState<HealthResponse | null>(null);
 
-  const [healthError, setHealthError] =
-    useState<string | null>(null);
+  const [healthError, setHealthError] = useState<string | null>(null);
 
-  const [workspaces, setWorkspaces] =
-    useState<Workspace[]>([]);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
-  const [workspaceError, setWorkspaceError] =
-    useState<string | null>(null);
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
 
   useEffect(() => {
     getHealth()
@@ -77,72 +71,48 @@ export default function Dashboard() {
 
     refreshWorkspaces();
 
-    const interval =
-      setInterval(
-        refreshWorkspaces,
-        5000
-      );
+    const interval = setInterval(refreshWorkspaces,5000);
 
     return () =>
       clearInterval(interval);
   }, [token]);
 
-  async function handleCreate(
-    name: string
-  ) {
+  async function handleCreate( name: string, templateId: string) {
     if (!token) {
       return;
     }
 
-    await createWorkspace(
-      token,
-      name
-    );
+    await createWorkspace(token,name,templateId);
 
     await refreshWorkspaces();
   }
 
-  async function handleStart(
-    workspaceId: string
-  ) {
+  async function handleStart(workspaceId: string) {
     if (!token) {
       return;
     }
 
-    await startWorkspace(
-      token,
-      workspaceId
-    );
+    await startWorkspace(token,workspaceId);
 
     await refreshWorkspaces();
   }
 
-  async function handleStop(
-    workspaceId: string
-  ) {
+  async function handleStop(workspaceId: string) {
     if (!token) {
       return;
     }
 
-    await stopWorkspace(
-      token,
-      workspaceId
-    );
+    await stopWorkspace(token,workspaceId);
 
     await refreshWorkspaces();
   }
 
-  async function handleDelete(
-    workspaceId: string
-  ) {
+  async function handleDelete(workspaceId: string) {
     if (!token) {
       return;
     }
 
-    await deleteWorkspace(
-      token,
-      workspaceId
-    );
+    await deleteWorkspace(token,workspaceId);
 
     await refreshWorkspaces();
   }
