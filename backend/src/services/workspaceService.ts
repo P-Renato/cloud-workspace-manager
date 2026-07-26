@@ -8,6 +8,8 @@ import {
   updateWorkspaceStatus,
   updateContainerId,
 } from "../repositories/workspaceRepository";
+import { getContainerStats } from "./dockerService";
+import { ContainerStats } from "../types/containerStats";
 
 import { createContainer, startContainer, stopContainer, removeContainer, } from "./dockerService";
 
@@ -216,4 +218,28 @@ export async function syncWorkspaceStatus(
   );
 
   return status;
+}
+
+export async function getWorkspaceStats(
+  workspaceId: string
+): Promise<ContainerStats> {
+
+  const workspace =
+    await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError(
+      "Workspace not found"
+    );
+  }
+
+  if (!workspace.container_id) {
+    throw new BadRequestError(
+      "Workspace has no container"
+    );
+  }
+
+  return getContainerStats(
+    workspace.container_id
+  );
 }

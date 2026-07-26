@@ -1,3 +1,5 @@
+import Button from "./ui/Button";
+
 interface WorkspaceActionsProps {
   status: "running" | "stopped" | "error";
 
@@ -18,23 +20,29 @@ export default function WorkspaceActions({
     <div
       style={{
         display: "flex",
-        gap: 12,
-        marginTop: 20,
+        gap: "1rem",
+        marginTop: "1.5rem",
       }}
     >
       {status === "stopped" ? (
-        <button onClick={onStart}>
+        <Button onClick={onStart}>
           Start Workspace
-        </button>
+        </Button>
       ) : (
-        <button onClick={onStop}>
+        <Button
+          variant="secondary"
+          onClick={onStop}
+        >
           Stop Workspace
-        </button>
+        </Button>
       )}
 
-      <button onClick={onDelete}>
+      <Button
+        variant="danger"
+        onClick={onDelete}
+      >
         Delete Workspace
-      </button>
+      </Button>
     </div>
   );
 }

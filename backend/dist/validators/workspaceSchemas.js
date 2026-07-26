@@ -6,14 +6,18 @@ exports.createWorkspaceSchema = zod_1.z.object({
     name: zod_1.z
         .string()
         .trim()
-        .min(1, "Workspace name is required")
-        .max(100, "Workspace name must be at most 100 characters"),
+        .min(1)
+        .max(100),
+    templateId: zod_1.z
+        .string()
+        .trim()
+        .min(1),
 });
 exports.updateWorkspaceSchema = zod_1.z.object({
     name: zod_1.z
         .string()
         .trim()
-        .min(1, "Workspace name is required")
-        .max(100, "Workspace name must be at most 100 characters"),
+        .min(1)
+        .max(100),
 });
 //# sourceMappingURL=workspaceSchemas.js.map
