@@ -1,0 +1,33 @@
+.form {
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+}
+
+.input,
+.select{
+    padding:.75rem;
+    border-radius:8px;
+}
+
+.submit{
+    align-self:flex-start;
+}
+.btn{
+    width: 12em;
+    align-self: center;
+}
+
+.fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    align-items: stretch;
+}
+
+.cardSet {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}

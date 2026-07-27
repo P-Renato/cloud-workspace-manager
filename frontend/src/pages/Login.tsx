@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
+import SectionTitle from "../components/ui/SectionTitle";
+import Card from "../components/ui/Card";
+import styles from "../components/WorkspaceForm.module.css"
 
 export default function Login() {
   const { login } = useAuth();
@@ -22,8 +26,8 @@ export default function Login() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Login</h1>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <SectionTitle>Login</SectionTitle>
 
       <input
         value={email}
@@ -31,6 +35,8 @@ export default function Login() {
           setEmail(e.target.value)
         }
         placeholder="Email"
+        className={styles.input}
+
       />
 
       <input
@@ -40,12 +46,18 @@ export default function Login() {
           setPassword(e.target.value)
         }
         placeholder="Password"
+        className={styles.input}
+
       />
 
-      <button type="submit">
-        Login
-      </button>
-      <button onClick={()=>navigate("/register")}>Register</button>
+      <Card className={styles.cardSet}>
+        <Button type="submit" className={styles.btn} >
+          Login
+        </Button>
+        <Button onClick={()=>navigate("/register")} className={styles.btn} >
+          Register
+        </Button>
+      </Card>
     </form>
   );
 }

@@ -22,6 +22,16 @@ curl \
   "password":"template123"
 
 
+  curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email":"front-test1@test.com",
+    "password":"password123"
+  }' \
+  http://localhost:3000/api/auth/login
+
+
 Register:
 curl \
 -X POST \
@@ -33,7 +43,7 @@ curl \
 http://localhost:3000/api/auth/register
 
 Workspaces:
-curl \
+curl -i \
   -H "Authorization: Bearer $TOKEN" \
   http://localhost:3000/api/workspaces
 

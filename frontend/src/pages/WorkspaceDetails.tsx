@@ -16,6 +16,12 @@ import WorkspaceInfo from "../components/WorkspaceInfo";
 import ContainerInfo from "../components/ContainerInfo";
 import ActivityLogList from "../components/ActivityLogList";
 import WorkspaceActions from "../components/WorkspaceActions";
+import ContainerStats from "../components/ContainerStats";
+import type { ContainerStatsType } from "../api/workspaces";
+import Page from "../components/ui/Page";
+import SectionTitle from "../components/ui/SectionTitle";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 export default function WorkspaceDetails() {
   const { id } = useParams();
@@ -24,19 +30,17 @@ export default function WorkspaceDetails() {
 
   const { token } = useAuth();
 
-  const [workspace, setWorkspace] =
-    useState<Workspace | null>(null);
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
 
-  const [metadata, setMetadata] =
-    useState<ContainerMetadata | null>(null);
+  const [metadata, setMetadata] = useState<ContainerMetadata | null>(null);
 
   const [logs, setLogs] = useState<ActivityLog[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
+    
+  const [stats, setStats] = useState<ContainerStatsType | null>(null);
 
   async function loadWorkspace() {
     if (!token || !id) {
@@ -48,24 +52,18 @@ export default function WorkspaceDetails() {
         workspace,
         metadata,
         logs,
+        stats
       ] = await Promise.all([
-        workspaceApi.getWorkspace(
-          token,
-          id
-        ),
-        workspaceApi.getWorkspaceMetadata(
-          token,
-          id
-        ),
-        workspaceApi.getWorkspaceLogs(
-          token,
-          id
-        ),
+        workspaceApi.getWorkspace(token, id),
+        workspaceApi.getWorkspaceMetadata(token, id),
+        workspaceApi.getWorkspaceLogs(token, id),
+        workspaceApi.getWorkspaceStats(token, id),
       ]);
 
       setWorkspace(workspace);
       setMetadata(metadata);
       setLogs(logs);
+      setStats(stats);
     } catch {
       setError(
         "Failed to load workspace."
@@ -131,36 +129,25 @@ export default function WorkspaceDetails() {
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 900,
-        margin: "0 auto",
-      }}
-    >
-      <button
-        onClick={() => navigate("/")}
-        style={{
-          marginBottom: 20,
-        }}
-      >
+    <Page>
+      <Button onClick={() => navigate("/")}>
         ← Back to Dashboard
-      </button>
+      </Button>
 
-      <h1>{workspace.name}</h1>
+      <SectionTitle>{workspace.name}</SectionTitle>
 
-      <WorkspaceInfo
-        workspace={workspace}
-      />
+      <Card>
+        <WorkspaceInfo workspace={workspace}/>
+      </Card>
 
-      <div
-        style={{
-          marginTop: 20,
-        }}
-      >
-        <ContainerInfo
-          metadata={metadata}
-        />
-      </div>
+      <Card>
+        <ContainerInfo metadata={metadata}/>
+      </Card>
+
+      <Card>
+        <ContainerStats stats={stats}/>
+      </Card>
+
 
       <WorkspaceActions
         status={workspace.status}
@@ -169,15 +156,9 @@ export default function WorkspaceDetails() {
         onDelete={handleDelete}
       />
 
-      <div
-        style={{
-          marginTop: 30,
-        }}
-      >
-        <ActivityLogList
-          logs={logs}
-        />
-      </div>
-    </div>
+      <Card>
+        <ActivityLogList logs={logs}/>
+      </Card>
+    </Page>
   );
 }

@@ -1,4 +1,6 @@
 import type { ActivityLog } from "../types/activityLogs";
+import SectionTitle from "../components/ui/SectionTitle";
+import Card from "../components/ui/Card";
 
 interface ActivityLogListProps {
   logs: ActivityLog[];
@@ -8,15 +10,10 @@ export default function ActivityLogList({
   logs,
 }: ActivityLogListProps) {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 20,
-      }}
-    >
-      <h2>Activity</h2>
-
+    <Card>
+      <SectionTitle>
+        Activity
+      </SectionTitle>
       {logs.length === 0 ? (
         <p>No activity recorded.</p>
       ) : (
@@ -34,6 +31,8 @@ export default function ActivityLogList({
           ))}
         </ul>
       )}
-    </div>
+
+    </Card>
+
   );
 }

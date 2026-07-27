@@ -1,4 +1,5 @@
 import Button from "./ui/Button";
+import styles from "./WorkspaceActions.module.css";
 
 interface WorkspaceActionsProps {
   status: "running" | "stopped" | "error";
@@ -17,13 +18,7 @@ export default function WorkspaceActions({
   onDelete,
 }: WorkspaceActionsProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "1rem",
-        marginTop: "1.5rem",
-      }}
-    >
+    <div className={styles.actions}>
       {status === "stopped" ? (
         <Button onClick={onStart}>
           Start Workspace
