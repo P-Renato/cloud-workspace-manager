@@ -159,3 +159,34 @@ export async function getWorkspaceMetadata(
 
   return response.json();
 }
+
+export interface ContainerStatsType {
+  cpuPercent: number;
+
+  memoryUsage: number;
+  memoryLimit: number;
+  memoryPercent: number;
+
+  networkRx: number;
+  networkTx: number;
+
+  uptime: string;
+}
+
+export async function getWorkspaceStats(
+  token: string,
+  workspaceId: string
+): Promise<ContainerStatsType> {
+  const response = await fetch(
+    `${API_URL}/api/workspaces/${workspaceId}/stats`,
+    {
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to load stats");
+  }
+
+  return response.json();
+}

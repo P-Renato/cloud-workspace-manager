@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
+import SectionTitle from "../components/ui/SectionTitle";
+import Card from "../components/ui/Card";
+import styles from "../components/WorkspaceForm.module.css"
 
 export default function Register() {
   const { register } = useAuth();
@@ -8,8 +12,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] =
-    useState("");
+  const [password, setPassword] =useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,8 +26,8 @@ export default function Register() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Register</h1>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <SectionTitle>Register</SectionTitle>
 
       <input
         value={email}
@@ -32,6 +35,8 @@ export default function Register() {
           setEmail(e.target.value)
         }
         placeholder="Email"
+        className={styles.input}
+
       />
 
       <input
@@ -41,11 +46,14 @@ export default function Register() {
           setPassword(e.target.value)
         }
         placeholder="Password"
-      />
+        className={styles.input}
 
-      <button type="submit">
-        Register
-      </button>
+      />
+      <Card className={styles.cardSet}>
+        <Button type="submit"  className={styles.btn}>
+          Register
+        </Button>
+      </Card>
     </form>
   );
 }

@@ -1,3 +1,6 @@
+import SectionTitle from "../components/ui/SectionTitle";
+import Card from "../components/ui/Card";
+
 interface ContainerMetadata {
   id: string;
   image: string;
@@ -13,15 +16,10 @@ export default function ContainerInfo({
   metadata,
 }: ContainerInfoProps) {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 20,
-      }}
-    >
-      <h2>Container</h2>
-
+    <Card>
+      <SectionTitle>
+        Container
+      </SectionTitle>
       {!metadata ? (
         <p>No container created.</p>
       ) : (
@@ -49,6 +47,7 @@ export default function ContainerInfo({
           </p>
         </>
       )}
-    </div>
+    </Card>
+
   );
 }

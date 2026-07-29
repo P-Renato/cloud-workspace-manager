@@ -245,11 +245,27 @@ export const logs = async (
   return res.json(logs);
 };
 
-export async function stats(
+export const stats = async (
   req: AuthRequest<WorkspaceParams>,
   res: Response
-) {
-  return res.json({
-    message: "Stats endpoint reached"
-  });
-}
+) => {
+  if (!req.userId) {
+    throw new UnauthorizedError();
+  }
+
+  const workspace =
+    await getWorkspaceById(req.params.id);
+
+  if (!workspace) {
+    throw new NotFoundError();
+  }
+
+  if (workspace.user_id !== req.userId) {
+    throw new ForbiddenError();
+  }
+
+  const stats =
+    await getWorkspaceStats(workspace.id);
+
+  return res.json(stats);
+};

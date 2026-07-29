@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Button from "./ui/Button";
+import SectionTitle from "./ui/SectionTitle";
+import styles from "./WorkspaceForm.module.css"
 
 interface WorkspaceFormProps {
   onCreate: (name: string, templateId: string) => Promise<void>;
@@ -23,26 +26,32 @@ export default function WorkspaceForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Create Workspace</h2>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <fieldset className={styles.fieldset}>
+        <SectionTitle>
+          Create Workspace
+        </SectionTitle> 
 
-      <input
-        value={name}
-        onChange={(e) =>
-          setName(e.target.value)
-        }
-        placeholder="Workspace name"
-      />
-      <select value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
-        <option value="alpine">Alpine Linux</option>
-        <option value="ubuntu">Ubuntu</option>
-        <option value="node">Node.js</option>
-        <option value="python312">Python</option>
-      </select>
+        <input
+          value={name}
+          onChange={(e) =>
+            setName(e.target.value)
+          }
+          placeholder="Workspace name"
+          className={styles.input}
+        />
+        <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className={styles.select}>
+          <option value="alpine">Alpine Linux</option>
+          <option value="ubuntu">Ubuntu</option>
+          <option value="node">Node.js</option>
+          <option value="python312">Python</option>
+        </select>
 
-      <button type="submit">
-        Create
-      </button>
+        <Button type="submit" className={styles.btn} >
+          Create New Workspace
+        </Button>
+
+      </fieldset>
     </form>
   );
 }
