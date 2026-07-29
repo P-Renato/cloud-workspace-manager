@@ -250,3 +250,97 @@ Workspace Containers
 * Verified activity logging
 * Verified metadata retrieval
 * Verified migration system
+
+
+## Session 14 – UI System, Monitoring & Interactive Terminal
+
+### Frontend Architecture
+
+* Replaced remaining inline styles with reusable UI components
+* Standardized page layout using shared UI primitives:
+  * `Page`
+  * `Card`
+  * `Grid`
+  * `Button`
+  * `SectionTitle`
+  * `StatusBadge`
+* Refactored Workspace Details page to use the new component system
+* Improved Workspace List and Workspace Form layouts
+* Increased frontend consistency and reduced duplicated styling
+
+### Container Monitoring
+
+* Added container statistics endpoint integration
+* Displayed live container metrics:
+  * CPU usage
+  * Memory usage
+  * Network RX
+  * Network TX
+  * Container uptime
+* Improved workspace monitoring capabilities directly from the dashboard
+
+### Real-Time Communication
+
+* Introduced Socket.IO server
+* Added Socket.IO client integration
+* Established persistent frontend ↔ backend WebSocket communication
+* Created reusable socket initialization layer
+* Verified successful bidirectional event exchange
+
+### Interactive Terminal
+
+* Integrated xterm.js into the React frontend
+* Configured terminal rendering with xterm-addon-fit
+* Added backend pseudo-terminal support using `node-pty`
+* Spawned interactive shell sessions for connected clients
+* Streamed terminal output from backend to frontend in real time
+* Forwarded keyboard input from the browser to the shell
+* Implemented terminal session lifecycle management
+* Verified execution of Linux commands directly from the browser
+
+### Development Environment
+
+* Separated development and production environment configuration
+* Improved `.env` loading strategy
+* Diagnosed and resolved conflicts between local PostgreSQL and Docker PostgreSQL
+* Fixed backend startup and port binding issues
+* Standardized local development workflow outside Docker while preserving containerized deployment
+
+### Testing
+
+* Verified live container statistics
+* Verified WebSocket connectivity
+* Verified interactive terminal input and output
+* Verified execution of Linux commands through the browser terminal
+* Verified end-to-end communication:
+  * React
+  * Socket.IO
+  * Express
+  * node-pty
+  * Linux shell
+
+  # Current Architecture Diagram
+
+  React Dashboard
+        │
+        ▼
+REST API + WebSockets
+        │
+        ▼
+Express Server
+        │
+ ┌──────┴─────────┐
+ ▼                ▼
+Service Layer   Socket.IO
+ │                │
+ ▼                ▼
+Repositories   node-pty
+ │                │
+ ▼                ▼
+PostgreSQL     Linux Shell
+ │                │
+ └──────┬─────────┘
+        ▼
+Docker Engine
+        ▼
+Workspace Containers

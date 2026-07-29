@@ -1,6 +1,7 @@
 import type { ContainerStatsType } from "../api/workspaces";
 import SectionTitle from "../components/ui/SectionTitle";
-import Card from "../components/ui/Card";
+import styles from "./ContainerStats.module.css";
+
 interface Props {
   stats: ContainerStatsType | null;
 }
@@ -10,56 +11,68 @@ function formatBytes(bytes: number) {
 }
 
 export default function ContainerStats({
-  stats,
-}: Props) {
-  if (!stats) {
-    return (
-      <div>
-        <h2>Container Stats</h2>
-        <p>No statistics available.</p>
-      </div>
-    );
-  }
+    stats,
+}:Props){
 
-  return (
-    <Card>
+    if(!stats){
+        return(
+            <>
+                <SectionTitle>
+                    Container Stats
+                </SectionTitle>
+
+                <p>No statistics available.</p>
+            </>
+        );
+    }
+
+    return(
+
+        <>
+
         <SectionTitle>
             Container Stats
         </SectionTitle>
-      <p>
-        <strong>CPU Usage:</strong>{" "}
-        {stats.cpuPercent.toFixed(2)}%
-      </p>
 
-      <p>
-        <strong>Memory:</strong>{" "}
-        {formatBytes(stats.memoryUsage)}
-      </p>
+        <div className={styles.grid}>
 
-      <p>
-        <strong>Memory Limit:</strong>{" "}
-        {formatBytes(stats.memoryLimit)}
-      </p>
+            <div>
+                <strong>CPU</strong>
+                <p>{stats.cpuPercent.toFixed(2)}%</p>
+            </div>
 
-      <p>
-        <strong>Memory Usage:</strong>{" "}
-        {stats.memoryPercent.toFixed(2)}%
-      </p>
+            <div>
+                <strong>Memory</strong>
+                <p>
+                    {formatBytes(stats.memoryUsage)} /{" "}
+                    {formatBytes(stats.memoryLimit)}
+                </p>
 
-      <p>
-        <strong>Downloaded:</strong>{" "}
-        {formatBytes(stats.networkRx)}
-      </p>
+                <p>{stats.memoryPercent.toFixed(2)}%</p>
+            </div>
 
-      <p>
-        <strong>Uploaded:</strong>{" "}
-        {formatBytes(stats.networkTx)}
-      </p>
+            <div>
+                <strong>RX</strong>
+                <p>{formatBytes(stats.networkRx)}</p>
+            </div>
 
-      <p>
-        <strong>Started:</strong>{" "}
-        {new Date(stats.uptime).toLocaleString()}
-      </p>
-    </Card>
-  );
+            <div>
+                <strong>TX</strong>
+                <p>{stats.networkTx} bytes</p>
+            </div>
+
+            <div>
+                <strong>Started</strong>
+                <p>
+                    {new Date(
+                        stats.uptime
+                    ).toLocaleString()}
+                </p>
+            </div>
+
+        </div>
+
+        </>
+
+    );
 }

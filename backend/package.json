@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js",
     "build": "tsc",
-    "migrate": "tsx database/migrate.ts",
-    "start": "node dist/index.js"
+    "migrate": "tsx database/migrate.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +22,9 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.11.0",
+    "node-pty": "^1.1.0",
     "pg": "^8.22.0",
+    "socket.io": "^4.8.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -30,7 +32,7 @@
     "@types/dockerode": "^4.0.1",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.2",
     "@types/pg": "^8.20.0",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.23.0",

@@ -1,0 +1,30 @@
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(180px,1fr));
+
+    gap:1rem;
+
+}
+
+.grid div{
+
+    border:1px solid #ddd;
+
+    border-radius:8px;
+
+    padding:1rem;
+
+}
+
+.grid p{
+
+    margin-top:.5rem;
+
+    font-weight:bold;
+
+    font-size:1.1rem;
+
+}

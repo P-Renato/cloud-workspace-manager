@@ -22,6 +22,8 @@ import Page from "../components/ui/Page";
 import SectionTitle from "../components/ui/SectionTitle";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
+import Grid from "../components/ui/Grid";
+import Terminal from "../components/Terminal";
 
 export default function WorkspaceDetails() {
   const { id } = useParams();
@@ -136,17 +138,23 @@ export default function WorkspaceDetails() {
 
       <SectionTitle>{workspace.name}</SectionTitle>
 
-      <Card>
-        <WorkspaceInfo workspace={workspace}/>
-      </Card>
+      <Grid>
+        <Card>
+          <WorkspaceInfo workspace={workspace}/>
+        </Card>
 
-      <Card>
-        <ContainerInfo metadata={metadata}/>
-      </Card>
+        <Card>
+          <ContainerInfo metadata={metadata}/>
+        </Card>
 
-      <Card>
-        <ContainerStats stats={stats}/>
+        <Card>
+          <ContainerStats stats={stats}/>
+        </Card>
+        <Card>
+          <Terminal />
       </Card>
+      </Grid>
+
 
 
       <WorkspaceActions
