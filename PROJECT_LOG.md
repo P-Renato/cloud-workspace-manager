@@ -344,3 +344,22 @@ PostgreSQL     Linux Shell
 Docker Engine
         ▼
 Workspace Containers
+
+
+## Session 15 – Docker Workspace Provisioning
+
+- Implemented workspace-specific Docker containers
+- Added persistent TerminalManager with one terminal session per workspace
+- Connected xterm.js frontend to backend using Socket.IO
+- Added node-pty terminal sessions
+- Fixed socket lifecycle to prevent duplicate terminal listeners
+- Implemented automatic Docker image provisioning
+- Backend now checks whether an image exists before creating a container
+- Missing images are automatically pulled from Docker Hub
+- Added support for multiple workspace templates
+  - Ubuntu
+  - Alpine Linux
+  - Node.js 22
+  - Python 3.12
+- Improved workspace startup workflow
+- Fixed workspace template validation
