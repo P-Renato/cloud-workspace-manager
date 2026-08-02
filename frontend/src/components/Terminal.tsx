@@ -7,12 +7,19 @@ import socket from "../lib/socket";
 
 import "xterm/css/xterm.css";
 
-export default function Terminal() {
-  const terminalRef =
-    useRef<HTMLDivElement>(null);
+type TerminalProps = {
+  workspaceId: string;
+};
+
+export default function Terminal({
+  workspaceId,
+}: TerminalProps) {
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!terminalRef.current) {
+    const container = terminalRef.current;
+
+    if (!container) {
       return;
     }
 
@@ -28,46 +35,76 @@ export default function Terminal() {
     const fitAddon = new FitAddon();
 
     term.loadAddon(fitAddon);
+    term.open(container);
 
-    term.open(terminalRef.current);
+    // Wait until the browser has laid out the element
+    const timer = window.setTimeout(() => {
+      try {
+        fitAddon.fit();
 
-    fitAddon.fit();
+        socket.emit("terminal-resize", {
+          cols: term.cols,
+          rows: term.rows,
+        });
 
-    // Give the terminal keyboard focus
-    term.focus();
-
-    // Receive output from the backend
-    socket.on(
-      "terminal-output",
-      (data: string) => {
-        term.write(data);
+        term.focus();
+      } catch (err) {
+        console.error("Fit failed:", err);
       }
-    );
+    }, 0);
 
-    // Send keyboard input to the backend
-    term.onData((data: string) => {
-        console.log(
-            "KEY:",
-            JSON.stringify(data),
-            data.charCodeAt(0)
-        );
+    const handleResize = () => {
+      try {
+        fitAddon.fit();
 
-        socket.emit("terminal-input", data);
+        socket.emit("terminal-resize", {
+          cols: term.cols,
+          rows: term.rows,
+        });
+      } catch (err) {
+        console.error("Resize failed:", err);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    socket.emit("terminal-connect", workspaceId);
+
+    const handleOutput = (data: string) => {
+      term.write(data);
+    };
+
+    socket.on("terminal-output", handleOutput);
+
+    const disposable = term.onData((data: string) => {
+      socket.emit("terminal-input", data);
     });
 
     return () => {
-      socket.off("terminal-output");
+      window.clearTimeout(timer);
+
+      disposable.dispose();
+
+      socket.off("terminal-output", handleOutput);
+
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+
+      socket.emit("terminal-disconnect");
 
       term.dispose();
     };
-  }, []);
+  }, [workspaceId]);
 
   return (
     <div
       ref={terminalRef}
       style={{
         width: "100%",
-        height: 450,
+        height: "450px",
+        overflow: "hidden",
       }}
     />
   );

@@ -151,7 +151,7 @@ export default function WorkspaceDetails() {
           <ContainerStats stats={stats}/>
         </Card>
         <Card>
-          <Terminal />
+          <Terminal workspaceId={workspace.id}/>
       </Card>
       </Grid>
 
