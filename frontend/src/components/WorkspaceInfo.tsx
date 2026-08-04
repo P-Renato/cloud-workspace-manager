@@ -1,6 +1,5 @@
 import type { Workspace } from "../types/workspace";
-
-import Card from "./ui/Card";
+import styles from "./WorkspaceInfo.module.css"
 import SectionTitle from "./ui/SectionTitle";
 
 import StatusBadge from "./StatusBadge";
@@ -13,37 +12,39 @@ export default function WorkspaceInfo({
   workspace,
 }: WorkspaceInfoProps) {
   return (
-    <Card>
-      <SectionTitle>
-        Workspace
-      </SectionTitle>
+    <div className={styles.grid}>
 
-      <p>
-        <strong>Name:</strong> {workspace.name}
-      </p>
+        <SectionTitle>
+          Workspace
+        </SectionTitle>
 
-      <p>
-        <strong>ID:</strong> {workspace.id}
-      </p>
+        <div className={styles.item}>
+          <strong>Name:</strong> {workspace.name}
+        </div>
 
-      <p>
-        <strong>Status:</strong>{" "}
-        <StatusBadge status={workspace.status} />
-      </p>
+        <div className={styles.item}>
+          <strong>ID:</strong> {workspace.id}
+        </div>
 
-      <p>
-        <strong>Created:</strong>{" "}
-        {new Date(
-          workspace.created_at
-        ).toLocaleString()}
-      </p>
+        <div className={styles.item}>
+          <strong>Status:</strong>{" "}
+          <StatusBadge status={workspace.status} />
+        </div>
 
-      <p>
-        <strong>Updated:</strong>{" "}
-        {new Date(
-          workspace.updated_at
-        ).toLocaleString()}
-      </p>
-    </Card>
+        <div className={styles.item}>
+          <strong>Created:</strong>{" "}
+          {new Date(
+            workspace.created_at
+          ).toLocaleString()}
+        </div>
+
+        <div className={styles.item}>
+          <strong>Updated:</strong>{" "}
+          {new Date(
+            workspace.updated_at
+          ).toLocaleString()}
+        </div>
+    </div>
+    
   );
 }

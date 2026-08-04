@@ -8,10 +8,32 @@ function getContainer(containerId: string) {
   return docker.getContainer(containerId);
 }
 
+// export async function createContainer(
+//   workspaceId: string,
+//   image: string
+// ): Promise<string> {
+//   const containerName = `workspace-${workspaceId}`;
+
+//   const container = await docker.createContainer({
+//     name: containerName,
+//     Image: image,
+//     Cmd: ["sleep", "infinity"],
+//   });
+
+//   return container.id;
+// }
+
 export async function createContainer(
   workspaceId: string,
   image: string
 ): Promise<string> {
+
+  console.log("Docker createContainer()");
+  console.log("Workspace:", workspaceId);
+  console.log("Image:", image);
+
+  await ensureImageExists(image);
+
   const containerName = `workspace-${workspaceId}`;
 
   const container = await docker.createContainer({
@@ -19,6 +41,8 @@ export async function createContainer(
     Image: image,
     Cmd: ["sleep", "infinity"],
   });
+
+  console.log("Docker returned:", container.id);
 
   return container.id;
 }
@@ -63,6 +87,43 @@ export async function getContainerMetadata(
     createdAt: metadata.Created,
   };
 }
+
+async function ensureImageExists(
+    image: string
+  ): Promise<void> {
+
+    try {
+      await docker.getImage(image).inspect();
+
+      console.log(`Image already exists: ${image}`);
+
+      return;
+
+    } catch {
+
+      console.log(`Pulling image: ${image}`);
+
+      const stream = await docker.pull(image);
+
+      await new Promise<void>((resolve, reject) => {
+
+        docker.modem.followProgress(
+          stream,
+          (error) => {
+
+            if (error) {
+              reject(error);
+              return;
+            }
+
+            resolve();
+          }
+        );
+      });
+
+      console.log(`Image downloaded: ${image}`);
+    }
+  }
 
 export async function getContainerStatus(
   containerId: string

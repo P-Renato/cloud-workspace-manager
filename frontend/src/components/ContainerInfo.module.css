@@ -1,0 +1,21 @@
+.grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(250px,1fr));
+
+    gap:1rem;
+}
+
+.grid div{
+    border:1px solid #ddd;
+
+    padding:1rem;
+
+    border-radius:8px;
+}
+
+.grid p{
+    margin-top:.4rem;
+    word-break:break-word;
+}

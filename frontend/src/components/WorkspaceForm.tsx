@@ -17,6 +17,12 @@ export default function WorkspaceForm({
     e.preventDefault();
 
     if (!name.trim()) {
+      alert("Please enter a workspace name.");
+      return;
+    }
+
+    if (!templateId) {
+      alert("Please select a template.");
       return;
     }
 
@@ -41,9 +47,12 @@ export default function WorkspaceForm({
           className={styles.input}
         />
         <select value={templateId} onChange={(e) => setTemplateId(e.target.value)} className={styles.select}>
+          <option value="" disabled>
+            Select a template...
+          </option>
           <option value="alpine">Alpine Linux</option>
           <option value="ubuntu">Ubuntu</option>
-          <option value="node">Node.js</option>
+          <option value="node22">Node.js</option>
           <option value="python312">Python</option>
         </select>
 

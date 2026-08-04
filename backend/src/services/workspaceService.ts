@@ -65,8 +65,7 @@ export async function getWorkspaceById(
   workspaceId: string
 ): Promise<Workspace | null> {
 
-  const workspace =
-    await findById(workspaceId);
+  const workspace = await findById(workspaceId);
 
   if (!workspace) {
     return null;
@@ -80,25 +79,28 @@ export async function getWorkspaceById(
 export async function startWorkspace(
   workspaceId: string
 ): Promise<void> {
-  const workspace =
-    await findById(workspaceId);
+  console.log("Starting workspace:", workspaceId);
+  const workspace = await findById(workspaceId);
 
   if (!workspace) {
     throw new NotFoundError("Workspace not found");
   }
 
-  let containerId =
-    workspace.container_id;
+  console.log("Workspace found:", workspace);
+
+  let containerId = workspace.container_id;
 
   if (!containerId) {
+    console.log("Creating container with image:", workspace.image);
     containerId = await createContainer(workspace.id, workspace.image);
 
-    await updateContainerId(
-      workspace.id,
-      containerId
-    );
-  }
+    console.log("Container created:", containerId);
+    
+    await updateContainerId( workspace.id, containerId);
 
+    console.log("Container ID saved to database.");
+  }
+  console.log("Starting container...");
   await startContainer(containerId);
 
   await updateWorkspaceStatus(
@@ -242,4 +244,51 @@ export async function getWorkspaceStats(
   return getContainerStats(
     workspace.container_id
   );
+}
+
+export async function getWorkspaceTerminalCommand(
+  workspaceId: string
+): Promise<{
+  command: string;
+  args: string[];
+}> {
+  const workspace = await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  if (!workspace.container_id) {
+    throw new BadRequestError(
+      "Workspace has not been started."
+    );
+  }
+
+  return {
+    command: "script",
+    args: [
+      "-q",
+      "-c",
+      `docker exec -it ${workspace.container_id} sh`,
+      "/dev/null",
+    ],
+  };
+}
+
+export async function getWorkspaceContainerId(
+  workspaceId: string
+): Promise<string> {
+  const workspace = await findById(workspaceId);
+
+  if (!workspace) {
+    throw new NotFoundError("Workspace not found");
+  }
+
+  if (!workspace.container_id) {
+    throw new BadRequestError(
+      "Workspace has not been started yet."
+    );
+  }
+
+  return workspace.container_id;
 }

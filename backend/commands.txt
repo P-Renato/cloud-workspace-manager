@@ -53,7 +53,7 @@ Create  aWorkspace:
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name":"My First Workspace"
+    "name":"CLI Workspace test 1"
   }' \
   http://localhost:3000/api/workspaces
 
@@ -62,7 +62,8 @@ curl \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name":"My First template"
+    "name":"My First template",
+    "templateId": "alpine"
   }' \
   http://localhost:3000/api/workspaces
 
@@ -71,6 +72,12 @@ curl \
   -X PATCH \
   -H "Authorization: Bearer $TOKEN" \
   http://localhost:3000/api/workspaces/$WORKSPACE_ID/start
+
+
+  curl \
+  -X DELETE \
+  -H "Authorization: Bearer $TOKEN" \
+  http://localhost:3000/api/workspaces/$WORKSPACE_ID
 
 
 
@@ -103,3 +110,11 @@ Application VM
       ▼
 Database VM
 └── PostgreSQL
+
+
+  164  docker exec -it cwm-postgres psql -U cloudworkspace_app -d postgres
+  165  docker exec -it cwm-postgres psql -U postgres
+  166  docker exec -it cwm-postgres psql -U cloudworkspace_app -d postgres
+  167  docker exec -it cwm-postgres psql -U cloudworkspace_app -d postgres -c "\l"
+  168  docker exec -it cwm-postgres psql -U cloudworkspace_app -d cloud_workspace_manager -c "\dt"
+  169  docker exec -it cwm-postgres psql -U cloudworkspace_app -d cloud_workspace_manager -c "\d"

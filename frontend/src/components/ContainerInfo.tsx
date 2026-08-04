@@ -1,5 +1,5 @@
-import SectionTitle from "../components/ui/SectionTitle";
-import Card from "../components/ui/Card";
+import SectionTitle from "./ui/SectionTitle";
+import styles from "./ContainerInfo.module.css";
 
 interface ContainerMetadata {
   id: string;
@@ -15,39 +15,46 @@ interface ContainerInfoProps {
 export default function ContainerInfo({
   metadata,
 }: ContainerInfoProps) {
+
   return (
-    <Card>
+    <>
       <SectionTitle>
         Container
       </SectionTitle>
+
       {!metadata ? (
         <p>No container created.</p>
       ) : (
-        <>
-          <p>
-            <strong>ID:</strong>{" "}
-            {metadata.id}
-          </p>
 
-          <p>
-            <strong>Image:</strong>{" "}
-            {metadata.image}
-          </p>
+        <div className={styles.grid}>
 
-          <p>
-            <strong>State:</strong>{" "}
-            {metadata.state}
-          </p>
+          <div>
+            <strong>ID</strong>
+            <p>{metadata.id}</p>
+          </div>
 
-          <p>
-            <strong>Created:</strong>{" "}
-            {new Date(
-              metadata.created
-            ).toLocaleString()}
-          </p>
-        </>
+          <div>
+            <strong>Image</strong>
+            <p>{metadata.image}</p>
+          </div>
+
+          <div>
+            <strong>Status</strong>
+            <p>{metadata.state}</p>
+          </div>
+
+          <div>
+            <strong>Created</strong>
+            <p>
+              {new Date(
+                metadata.created
+              ).toLocaleString()}
+            </p>
+          </div>
+
+        </div>
+
       )}
-    </Card>
-
+    </>
   );
 }
