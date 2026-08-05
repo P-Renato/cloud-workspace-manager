@@ -7,7 +7,8 @@ export async function createWorkspace(
   userId: string,
   name: string,
   templateId: string,
-  image: string
+  image: string,
+  volumeName: string
 ): Promise<void> {
   await pool.query(
     `
@@ -17,16 +18,18 @@ export async function createWorkspace(
       user_id,
       name,
       template_id,
-      image
+      image,
+      volume_name
     )
-    VALUES ($1,$2,$3,$4,$5)
+    VALUES ($1,$2,$3,$4,$5,$6)
     `,
     [
       id,
       userId,
       name,
       templateId,
-      image
+      image,
+      volumeName
     ]
   );
 }
@@ -43,6 +46,7 @@ export async function findByUserId(
       template_id,
       image,
       status,
+      volume_name,
       container_id
     FROM workspaces
     WHERE user_id = $1
@@ -68,6 +72,7 @@ export async function findById(
       status,
       container_id,
       created_at,
+      volume_name,
       updated_at
     FROM workspaces
     WHERE id = $1
@@ -133,6 +138,7 @@ export async function findByContainerId(
       status,
       container_id,
       created_at,
+      volume_name,
       updated_at
     FROM workspaces
     WHERE container_id = $1

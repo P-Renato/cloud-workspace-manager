@@ -1,6 +1,11 @@
 FROM node:22-alpine
 
-RUN apk add --no-cache docker-cli
+RUN apk add --no-cache \
+    docker-cli \
+    util-linux \
+    python3 \
+    make \
+    g++
 
 WORKDIR /app
 

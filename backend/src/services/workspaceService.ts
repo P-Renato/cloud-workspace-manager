@@ -8,7 +8,7 @@ import {
   updateWorkspaceStatus,
   updateContainerId,
 } from "../repositories/workspaceRepository";
-import { getContainerStats } from "./dockerService";
+import { containerExists, getContainerStats } from "./dockerService";
 import { ContainerStats } from "../types/containerStats";
 
 import { createContainer, startContainer, stopContainer, removeContainer, } from "./dockerService";
@@ -40,7 +40,9 @@ export async function createWorkspace(
 
   const id = crypto.randomUUID();
 
-  await createWorkspaceRepository(id, userId, name, template.id, template.image);
+  const volumeName = `workspace-${id}-data`;
+
+  await createWorkspaceRepository(id, userId, name, template.id, template.image, volumeName);
 
   await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
 
@@ -89,6 +91,24 @@ export async function startWorkspace(
   console.log("Workspace found:", workspace);
 
   let containerId = workspace.container_id;
+
+  if (containerId) {
+
+    const exists = await containerExists(containerId);
+
+    if (!exists) {
+
+      console.log(
+        `Container ${containerId} no longer exists. Recreating...`
+      );
+
+      // Database was pointing to a deleted container.
+      // Clear it before creating a new one.
+      await updateContainerId(workspace.id, null);
+
+      containerId = null;
+    }
+  }
 
   if (!containerId) {
     console.log("Creating container with image:", workspace.image);
@@ -206,18 +226,22 @@ export async function syncWorkspaceStatus(
     return "stopped";
   }
 
-  const dockerStatus =
-    await getContainerStatus(
-      workspace.container_id
-    );
+  const dockerStatus = await getContainerStatus(workspace.container_id);
 
-  const status =
-    mapDockerStatus(dockerStatus);
+  if (dockerStatus === "missing") {
+    console.log(`Container for workspace ${workspace.id} is missing.`);
 
-  await updateWorkspaceStatus(
-    workspace.id,
-    status
-  );
+    await updateContainerId(workspace.id, null);
+
+    await updateWorkspaceStatus(workspace.id, "stopped");
+
+    return "stopped";
+  }
+
+
+  const status = mapDockerStatus(dockerStatus);
+
+  await updateWorkspaceStatus(workspace.id, status);
 
   return status;
 }

@@ -12,6 +12,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { createServer } from "http";
 import { initializeSocket } from "./socket/socketServer";
 import { registerTerminalSocket } from "./socket/terminalSocket";
+import { register } from "./config/prometheus";
 
 dotenv.config({
   path:
@@ -29,6 +30,13 @@ registerTerminalSocket(io);
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+
+// Prometheus endpoint, maybe later I will refactor it
+app.get("/metrics", async (_req, res) => {
+  res.set("Content-Type", register.contentType);
+
+  res.end(await register.metrics());
+});
 
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
