@@ -16,8 +16,8 @@ export const env = {
   PORT: Number(process.env.PORT) || 3000,
   JWT_SECRET: requireEnv("JWT_SECRET"),
 
-  DB_HOST: process.env.DB_HOST || "localhost",
-  DB_PORT: Number(process.env.DB_PORT) || 5432,
+  DB_HOST: requireEnv("DB_HOST"),
+  DB_PORT: Number(requireEnv("DB_PORT")),
   DB_NAME: requireEnv("DB_NAME"),
   DB_USER: requireEnv("DB_USER"),
   DB_PASSWORD: requireEnv("DB_PASSWORD"),

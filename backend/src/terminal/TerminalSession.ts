@@ -27,6 +27,12 @@ export class TerminalSession {
         socket.emit("terminal-output", data);
       }
     });
+    this.terminal.onExit(({ exitCode, signal }) => {
+      console.log("Terminal exited", {
+        exitCode,
+        signal,
+      });
+    });
   }
 
   attach(socket: Socket) {
@@ -40,15 +46,13 @@ export class TerminalSession {
       this.terminal.write(data);
     };
 
-    const resizeHandler = ({
-      cols,
-      rows,
-    }: {
-      cols: number;
-      rows: number;
-    }) => {
-      this.terminal.resize(cols, rows);
-    };
+    const resizeHandler = ({ cols, rows }: {cols: number, rows: number}) => {
+  try {
+    this.terminal.resize(cols, rows);
+  } catch (err) {
+    console.error("Resize failed:", err);
+  }
+};
 
     socket.on("terminal-input", inputHandler);
     socket.on("terminal-resize", resizeHandler);

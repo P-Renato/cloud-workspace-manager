@@ -21,6 +21,8 @@ export interface Workspace {
 
   container_id: string | null;
 
+  volume_name: string | null;
+
   created_at: Date;
 
   updated_at: Date;
