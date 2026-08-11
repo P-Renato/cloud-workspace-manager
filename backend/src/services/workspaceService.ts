@@ -25,6 +25,7 @@ import { WORKSPACE_TEMPLATES } from "../config/workspaceTemplates";
 
 import { getContainerStatus } from "./dockerService";
 import { mapDockerStatus } from "./dockerStatusMapper";
+import { workspaceCreationCounter, workspaceDeletionCounter, workspaceStartCounter, workspaceStopCounter, workspaceStartupDuration,} from "../config/prometheus";
 
 
 export async function createWorkspace(
@@ -45,6 +46,8 @@ export async function createWorkspace(
   await createWorkspaceRepository(id, userId, name, template.id, template.image, volumeName);
 
   await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
+
+  workspaceCreationCounter.inc();
 
   return { id, name, status: "stopped",};
 }
@@ -81,6 +84,8 @@ export async function getWorkspaceById(
 export async function startWorkspace(
   workspaceId: string
 ): Promise<void> {
+  const startTime = process.hrtime.bigint();
+
   console.log("Starting workspace:", workspaceId);
   const workspace = await findById(workspaceId);
 
@@ -133,6 +138,9 @@ export async function startWorkspace(
     workspace.id,
     "START_WORKSPACE"
   );
+  const duration = Number(process.hrtime.bigint() - startTime) / 1_000_000_000;
+  workspaceStartCounter.inc();
+  workspaceStartupDuration.observe(duration);
 }
 
 export async function stopWorkspace(
@@ -163,6 +171,7 @@ export async function stopWorkspace(
     workspace.id,
     "STOP_WORKSPACE"
   );
+  workspaceStopCounter.inc();
 }
 
 export async function deleteUserWorkspace(
@@ -188,6 +197,7 @@ export async function deleteUserWorkspace(
   );
 
   await deleteWorkspace(workspace.id);
+  workspaceDeletionCounter.inc();
 };
 
 export async function getWorkspaceLogs(

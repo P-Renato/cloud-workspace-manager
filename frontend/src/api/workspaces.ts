@@ -190,3 +190,56 @@ export async function getWorkspaceStats(
 
   return response.json();
 }
+
+export interface AdminMetric {
+  metric: {
+    __name__: string;
+    instance: string;
+    job: string;
+  };
+  value: [
+    number,
+    string
+  ];
+}
+
+export interface AdminMetricPoint {
+  timestamp: number;
+  value: number;
+}
+
+export interface AdminMetrics {
+  workspaceStarts: number;
+  workspaceStops: number;
+  workspaceCreations: number;
+  workspaceDeletions: number;
+  
+  httpRequestRate: number[];
+  httpRequestDuration: number;
+
+  cpuUsage: number;
+
+  workspaceCreationsHistory: AdminMetricPoint[];
+  workspaceStartsHistory: AdminMetricPoint[];
+  workspaceStopsHistory: AdminMetricPoint[];
+  workspaceDeletionsHistory: AdminMetricPoint[];
+}
+
+export async function getAdminMetrics(
+  token: string
+): Promise<AdminMetrics> {
+  const response = await fetch(
+    `${API_URL}/admin/metrics`,
+    {
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to load admin metrics"
+    );
+  }
+
+  return response.json();
+}

@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminMetrics from "./pages/AdminMetrics";
 
 function App() {
   return (
@@ -20,6 +21,15 @@ function App() {
       <Route
         path="/register"
         element={<Register />}
+      />
+
+      <Route
+        path="/admin/metrics"
+        element={
+          <ProtectedRoute>
+            <AdminMetrics />
+          </ProtectedRoute>
+        }
       />
 
       <Route

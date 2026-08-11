@@ -1,9 +1,4 @@
-import {
-  Request,
-  Response,
-  NextFunction,
-} from "express";
-
+import { Request, Response, NextFunction,} from "express";
 import { verifyToken } from "../services/authService";
 import { UnauthorizedError } from "../errors/UnauthorizedError";
 
@@ -21,31 +16,19 @@ export interface AuthRequest<
   userId?: string;
 }
 
-export function authenticate(
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction
-) {
-  const authHeader =
-    req.headers.authorization;
+export function authenticate(req: AuthRequest, _res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return next(
-      new UnauthorizedError(
-        "No token provided"
-      )
-    );
+    return next(new UnauthorizedError("No token provided"));
   }
 
-  const token =
-    authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1];
 
   try {
-    const decoded =
-      verifyToken(token);
+    const decoded = verifyToken(token);
 
-    req.userId =
-      decoded.userId;
+    req.userId = decoded.userId;
 
     next();
   } catch {

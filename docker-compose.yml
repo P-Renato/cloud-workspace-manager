@@ -27,6 +27,8 @@ services:
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET}
 
+      PROMETHEUS_URL: ${PROMETHEUS_URL}
+
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
@@ -74,6 +76,21 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
 
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: cwm-grafana
+
+    restart: unless-stopped
+
+    depends_on:
+      - prometheus
+
+    ports:
+      - "3001:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
   node-exporter:
     image: prom/node-exporter:latest
     container_name: cwm-node-exporter
@@ -97,3 +114,4 @@ services:
 
 volumes:
   postgres_data:
+  grafana_data:

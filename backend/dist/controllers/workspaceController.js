@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logs = exports.metadata = exports.syncStatus = exports.stop = exports.start = exports.remove = exports.getById = exports.getAll = exports.create = void 0;
-exports.stats = stats;
+exports.stats = exports.logs = exports.metadata = exports.syncStatus = exports.stop = exports.start = exports.remove = exports.getById = exports.getAll = exports.create = void 0;
 const UnauthorizedError_1 = require("../errors/UnauthorizedError");
 const ForbiddenError_1 = require("../errors/ForbiddenError");
 const NotFoundError_1 = require("../errors/NotFoundError");
@@ -138,13 +137,19 @@ const logs = async (req, res) => {
     return res.json(logs);
 };
 exports.logs = logs;
-async function stats(req, res, next) {
-    try {
-        const data = await (0, workspaceService_1.getWorkspaceStats)(req.params.id);
-        res.json(data);
+const stats = async (req, res) => {
+    if (!req.userId) {
+        throw new UnauthorizedError_1.UnauthorizedError();
     }
-    catch (err) {
-        next(err);
+    const workspace = await (0, workspaceService_1.getWorkspaceById)(req.params.id);
+    if (!workspace) {
+        throw new NotFoundError_1.NotFoundError();
     }
-}
+    if (workspace.user_id !== req.userId) {
+        throw new ForbiddenError_1.ForbiddenError();
+    }
+    const stats = await (0, workspaceService_1.getWorkspaceStats)(workspace.id);
+    return res.json(stats);
+};
+exports.stats = stats;
 //# sourceMappingURL=workspaceController.js.map
