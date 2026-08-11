@@ -7,7 +7,7 @@ export type HealthResponse = {
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getHealth(): Promise<HealthResponse> {
-  const res = await fetch(`${API_URL}/api/health`);
+  const res = await fetch(`${API_URL}/health`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch health");

@@ -27,10 +27,12 @@ services:
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET}
 
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: cloud_workspace_manager
-      DB_USER: cloudworkspace_app
+      PROMETHEUS_URL: ${PROMETHEUS_URL}
+
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
 
     ports:
@@ -48,5 +50,68 @@ services:
     ports:
       - "4173:4173"
 
+  nginx:
+    build:
+      context: ./nginx
+    container_name: cwm-nginx
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: cwm-prometheus
+
+    restart: unless-stopped
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: cwm-grafana
+
+    restart: unless-stopped
+
+    depends_on:
+      - prometheus
+
+    ports:
+      - "3001:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: cwm-node-exporter
+
+    restart: unless-stopped
+
+    ports:
+      - "9100:9100"
+
+    pid: host
+
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+
 volumes:
   postgres_data:
+  grafana_data:

@@ -363,3 +363,57 @@ Workspace Containers
   - Python 3.12
 - Improved workspace startup workflow
 - Fixed workspace template validation
+
+## Session 15 – Docker Workspace Provisioning & Persistent Storage
+
+### Workspace Provisioning
+
+- Implemented workspace-specific Docker container lifecycle
+- Added automatic Docker image provisioning
+- Backend now verifies image availability before container creation
+- Missing images are automatically pulled from Docker Hub
+- Added support for multiple workspace templates:
+  - Ubuntu 24.04
+  - Alpine Linux
+  - Node.js 22
+  - Python 3.12
+- Improved workspace startup workflow
+- Fixed workspace template validation and frontend template IDs
+
+### Persistent Storage
+
+- Implemented Docker volumes for every workspace
+- Created one persistent volume per workspace
+- Automatically reuses existing volumes when recreating containers
+- Mounted persistent workspace storage at `/workspace`
+- Verified file persistence after container recreation
+
+### Workspace Recovery
+
+- Added automatic detection of missing Docker containers
+- Recreated deleted containers while preserving workspace data
+- Synchronized PostgreSQL state with Docker runtime
+- Improved workspace status synchronization
+- Prevented stale container references from breaking workspace startup
+
+### Interactive Terminal Improvements
+
+- Refined terminal session lifecycle management
+- Ensured one active terminal session per workspace
+- Fixed duplicate Socket.IO event listeners
+- Correctly detached sockets when navigating between workspaces
+- Improved terminal stability across workspace changes
+
+### Testing
+
+Verified complete provisioning workflow:
+
+- Created new workspaces from multiple templates
+- Automatically downloaded missing Docker images
+- Started and stopped workspace containers
+- Executed commands inside containers through the browser terminal
+- Created files inside `/workspace`
+- Deleted Docker containers manually
+- Automatically recreated containers
+- Verified persistent data survived container recreation
+- Verified terminal functionality after recovery

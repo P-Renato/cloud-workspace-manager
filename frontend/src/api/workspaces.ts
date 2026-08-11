@@ -14,7 +14,7 @@ export async function getWorkspaces(
   token: string
 ): Promise<Workspace[]> {
   const response = await fetch(
-    `${API_URL}/api/workspaces`,
+    `${API_URL}/workspaces`,
     {
       headers: getHeaders(token),
     }
@@ -33,7 +33,7 @@ export async function createWorkspace(
   templateId: string
 ) {
   const response = await fetch(
-    `${API_URL}/api/workspaces`,
+    `${API_URL}/workspaces`,
     {
       method: "POST",
       headers: getHeaders(token),
@@ -56,7 +56,7 @@ export async function deleteWorkspace(
   workspaceId: string
 ) {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}`,
+    `${API_URL}/workspaces/${workspaceId}`,
     {
       method: "DELETE",
       headers: getHeaders(token),
@@ -73,7 +73,7 @@ export async function startWorkspace(
   workspaceId: string
 ) {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/start`,
+    `${API_URL}/workspaces/${workspaceId}/start`,
     {
       method: "PATCH",
       headers: getHeaders(token),
@@ -92,7 +92,7 @@ export async function stopWorkspace(
   workspaceId: string
 ) {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/stop`,
+    `${API_URL}/workspaces/${workspaceId}/stop`,
     {
       method: "PATCH",
       headers: getHeaders(token),
@@ -111,7 +111,7 @@ export async function getWorkspace(
   workspaceId: string
 ): Promise<Workspace> {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}`,
+    `${API_URL}/workspaces/${workspaceId}`,
     {
       headers: getHeaders(token),
     }
@@ -129,7 +129,7 @@ export async function getWorkspaceLogs(
   workspaceId: string
 ): Promise<ActivityLog[]> {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/logs`,
+    `${API_URL}/workspaces/${workspaceId}/logs`,
     {
       headers: getHeaders(token),
     }
@@ -147,7 +147,7 @@ export async function getWorkspaceMetadata(
   workspaceId: string
 ): Promise<ContainerMetadata | null> {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/metadata`,
+    `${API_URL}/workspaces/${workspaceId}/metadata`,
     {
       headers: getHeaders(token),
     }
@@ -178,7 +178,7 @@ export async function getWorkspaceStats(
   workspaceId: string
 ): Promise<ContainerStatsType> {
   const response = await fetch(
-    `${API_URL}/api/workspaces/${workspaceId}/stats`,
+    `${API_URL}/workspaces/${workspaceId}/stats`,
     {
       headers: getHeaders(token),
     }
@@ -186,6 +186,59 @@ export async function getWorkspaceStats(
 
   if (!response.ok) {
     throw new Error("Failed to load stats");
+  }
+
+  return response.json();
+}
+
+export interface AdminMetric {
+  metric: {
+    __name__: string;
+    instance: string;
+    job: string;
+  };
+  value: [
+    number,
+    string
+  ];
+}
+
+export interface AdminMetricPoint {
+  timestamp: number;
+  value: number;
+}
+
+export interface AdminMetrics {
+  workspaceStarts: number;
+  workspaceStops: number;
+  workspaceCreations: number;
+  workspaceDeletions: number;
+  
+  httpRequestRate: number[];
+  httpRequestDuration: number;
+
+  cpuUsage: number;
+
+  workspaceCreationsHistory: AdminMetricPoint[];
+  workspaceStartsHistory: AdminMetricPoint[];
+  workspaceStopsHistory: AdminMetricPoint[];
+  workspaceDeletionsHistory: AdminMetricPoint[];
+}
+
+export async function getAdminMetrics(
+  token: string
+): Promise<AdminMetrics> {
+  const response = await fetch(
+    `${API_URL}/admin/metrics`,
+    {
+      headers: getHeaders(token),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to load admin metrics"
+    );
   }
 
   return response.json();

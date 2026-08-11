@@ -8,20 +8,36 @@ function getContainer(containerId: string) {
   return docker.getContainer(containerId);
 }
 
-// export async function createContainer(
-//   workspaceId: string,
-//   image: string
-// ): Promise<string> {
-//   const containerName = `workspace-${workspaceId}`;
+function getVolumeName(workspaceId: string) {
+  return `workspace-${workspaceId}`;
+}
 
-//   const container = await docker.createContainer({
-//     name: containerName,
-//     Image: image,
-//     Cmd: ["sleep", "infinity"],
-//   });
+async function ensureVolumeExists(
+  workspaceId: string
+): Promise<string> {
 
-//   return container.id;
-// }
+  const volumeName = getVolumeName(workspaceId);
+
+  try {
+
+    await docker
+      .getVolume(volumeName)
+      .inspect();
+
+    console.log(`Volume already exists: ${volumeName}`);
+
+  } catch {
+
+    console.log(`Creating volume: ${volumeName}`);
+
+    await docker.createVolume({Name: volumeName, });
+
+    console.log(`Volume created: ${volumeName}`);
+
+  }
+
+  return volumeName;
+}
 
 export async function createContainer(
   workspaceId: string,
@@ -36,13 +52,22 @@ export async function createContainer(
 
   const containerName = `workspace-${workspaceId}`;
 
+  const volumeName = await ensureVolumeExists(workspaceId);
+
+  console.log("Volume:", volumeName);
+
   const container = await docker.createContainer({
     name: containerName,
     Image: image,
     Cmd: ["sleep", "infinity"],
+    HostConfig: {
+      Binds: [
+        `${volumeName}:/workspace`,
+      ],
+    },
   });
 
-  console.log("Docker returned:", container.id);
+  console.log("Container created:", container.id);
 
   return container.id;
 }
@@ -69,68 +94,107 @@ export async function removeContainer(
 
 export async function getContainerMetadata(
   containerId: string
-): Promise<ContainerMetadata> {
-  const metadata = await getContainer(containerId).inspect();
+): Promise<ContainerMetadata | null> {
 
-  const firstNetwork = Object.values(
-    metadata.NetworkSettings.Networks ?? {}
-  )[0];
+  try {
 
-  const ipAddress = firstNetwork?.IPAddress ?? null;
+    const metadata = await getContainer(containerId).inspect();
 
-  return {
-    id: metadata.Id,
-    name: metadata.Name.replace("/", ""),
-    image: metadata.Config.Image,
-    status: metadata.State.Status,
-    ipAddress,
-    createdAt: metadata.Created,
-  };
+    const firstNetwork = Object.values(
+      metadata.NetworkSettings.Networks ?? {}
+    )[0];
+
+    const ipAddress = firstNetwork?.IPAddress ?? null;
+
+    return {
+      id: metadata.Id,
+      name: metadata.Name.replace("/", ""),
+      image: metadata.Config.Image,
+      status: metadata.State.Status,
+      ipAddress,
+      createdAt: metadata.Created,
+    };
+
+  } catch {
+
+    return null;
+
+  }
 }
 
 async function ensureImageExists(
-    image: string
-  ): Promise<void> {
+  image: string
+): Promise<void> {
 
-    try {
-      await docker.getImage(image).inspect();
+  try {
+    await docker.getImage(image).inspect();
 
-      console.log(`Image already exists: ${image}`);
+    console.log(`Image already exists: ${image}`);
 
-      return;
+    return;
 
-    } catch {
+  } catch {
 
-      console.log(`Pulling image: ${image}`);
+    console.log(`Pulling image: ${image}`);
 
-      const stream = await docker.pull(image);
+    const stream = await docker.pull(image);
 
-      await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
 
-        docker.modem.followProgress(
-          stream,
-          (error) => {
+      docker.modem.followProgress(
+        stream,
+        (error) => {
 
-            if (error) {
-              reject(error);
-              return;
-            }
-
-            resolve();
+          if (error) {
+            reject(error);
+            return;
           }
-        );
-      });
 
-      console.log(`Image downloaded: ${image}`);
-    }
+          resolve();
+        }
+      );
+    });
+
+    console.log(`Image downloaded: ${image}`);
   }
+}
+
+
+export async function removeVolume(
+  workspaceId: string
+): Promise<void> {
+
+  const volumeName = getVolumeName(workspaceId);
+
+  try {
+
+    await docker
+      .getVolume(volumeName)
+      .remove();
+
+    console.log("Volume removed:", volumeName);
+
+  } catch {
+
+    console.log("Volume not found:", volumeName);
+  }
+}
 
 export async function getContainerStatus(
   containerId: string
 ): Promise<string> {
-  const metadata = await getContainer(containerId).inspect();
 
-  return metadata.State.Status;
+  try {
+
+    const metadata = await getContainer(containerId).inspect();
+
+    return metadata.State.Status;
+
+  } catch {
+
+    return "missing";
+
+  }
 }
 
 export async function getContainerStats(
@@ -194,3 +258,21 @@ export async function getContainerStats(
   };
 }
 
+export async function containerExists(
+  containerId: string
+): Promise<boolean> {
+
+  try {
+
+    await docker
+      .getContainer(containerId)
+      .inspect();
+
+    return true;
+
+  } catch {
+
+    return false;
+
+  }
+}

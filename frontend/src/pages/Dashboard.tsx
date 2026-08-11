@@ -13,6 +13,8 @@ import {
   deleteWorkspace,
   startWorkspace,
   stopWorkspace,
+  getAdminMetrics,
+  type AdminMetrics,
 } from "../api/workspaces";
 
 import type { Workspace } from "../types/workspace";
@@ -21,6 +23,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import WorkspaceForm from "../components/WorkspaceForm";
 import WorkspaceList from "../components/WorkspaceList";
 import SystemStatus from "../components/SystemStatus";
+import AdminMetricsHeader from "../components/AdminMetricsHeader";
 
 export default function Dashboard() {
   const {
@@ -36,6 +39,8 @@ export default function Dashboard() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
+
+  const [adminMetrics, setAdminMetrics] = useState<AdminMetrics | null>(null);
 
   useEffect(() => {
     getHealth()
@@ -64,14 +69,37 @@ export default function Dashboard() {
     }
   }
 
+  async function refreshAdminMetrics() {
+    console.log("REFRESHING ADMIN METRICS");
+    if (!token) {
+      return;
+    }
+
+    try {
+      const data = await getAdminMetrics(token);
+      console.log("ADMIN METRICS:", data);
+
+      setAdminMetrics(data);
+    } catch (err) {
+      console.error(
+        "Failed to load admin metrics",
+        err
+      );
+    }
+  }
+
   useEffect(() => {
     if (!token) {
       return;
     }
 
     refreshWorkspaces();
+    refreshAdminMetrics();
 
-    const interval = setInterval(refreshWorkspaces,5000);
+    const interval = setInterval(() => {
+      refreshWorkspaces();                                        
+      refreshAdminMetrics();
+    }, 5000);
 
     return () =>
       clearInterval(interval);
@@ -137,6 +165,10 @@ export default function Dashboard() {
         onStart={handleStart}
         onStop={handleStop}
         onDelete={handleDelete}
+      />
+
+      <AdminMetricsHeader
+        metrics={adminMetrics}
       />
 
       <SystemStatus

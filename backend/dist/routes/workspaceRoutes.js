@@ -6,6 +6,7 @@ const authenticate_1 = require("../middleware/authenticate");
 const validate_1 = require("../middleware/validate");
 const workspaceSchemas_1 = require("../validators/workspaceSchemas");
 const router = (0, express_1.Router)();
+console.log("Workspace routes loaded");
 // This is saying that all the routes in this router need authentication, so it is not required to add, manually every time a route is added
 router.use(authenticate_1.authenticate);
 // But only POST needs validation, because it recieves a request body

@@ -8,7 +8,7 @@ import {
   updateWorkspaceStatus,
   updateContainerId,
 } from "../repositories/workspaceRepository";
-import { getContainerStats } from "./dockerService";
+import { containerExists, getContainerStats } from "./dockerService";
 import { ContainerStats } from "../types/containerStats";
 
 import { createContainer, startContainer, stopContainer, removeContainer, } from "./dockerService";
@@ -25,6 +25,7 @@ import { WORKSPACE_TEMPLATES } from "../config/workspaceTemplates";
 
 import { getContainerStatus } from "./dockerService";
 import { mapDockerStatus } from "./dockerStatusMapper";
+import { workspaceCreationCounter, workspaceDeletionCounter, workspaceStartCounter, workspaceStopCounter, workspaceStartupDuration,} from "../config/prometheus";
 
 
 export async function createWorkspace(
@@ -40,9 +41,13 @@ export async function createWorkspace(
 
   const id = crypto.randomUUID();
 
-  await createWorkspaceRepository(id, userId, name, template.id, template.image);
+  const volumeName = `workspace-${id}-data`;
+
+  await createWorkspaceRepository(id, userId, name, template.id, template.image, volumeName);
 
   await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
+
+  workspaceCreationCounter.inc();
 
   return { id, name, status: "stopped",};
 }
@@ -79,6 +84,8 @@ export async function getWorkspaceById(
 export async function startWorkspace(
   workspaceId: string
 ): Promise<void> {
+  const startTime = process.hrtime.bigint();
+
   console.log("Starting workspace:", workspaceId);
   const workspace = await findById(workspaceId);
 
@@ -89,6 +96,24 @@ export async function startWorkspace(
   console.log("Workspace found:", workspace);
 
   let containerId = workspace.container_id;
+
+  if (containerId) {
+
+    const exists = await containerExists(containerId);
+
+    if (!exists) {
+
+      console.log(
+        `Container ${containerId} no longer exists. Recreating...`
+      );
+
+      // Database was pointing to a deleted container.
+      // Clear it before creating a new one.
+      await updateContainerId(workspace.id, null);
+
+      containerId = null;
+    }
+  }
 
   if (!containerId) {
     console.log("Creating container with image:", workspace.image);
@@ -113,6 +138,9 @@ export async function startWorkspace(
     workspace.id,
     "START_WORKSPACE"
   );
+  const duration = Number(process.hrtime.bigint() - startTime) / 1_000_000_000;
+  workspaceStartCounter.inc();
+  workspaceStartupDuration.observe(duration);
 }
 
 export async function stopWorkspace(
@@ -143,6 +171,7 @@ export async function stopWorkspace(
     workspace.id,
     "STOP_WORKSPACE"
   );
+  workspaceStopCounter.inc();
 }
 
 export async function deleteUserWorkspace(
@@ -168,6 +197,7 @@ export async function deleteUserWorkspace(
   );
 
   await deleteWorkspace(workspace.id);
+  workspaceDeletionCounter.inc();
 };
 
 export async function getWorkspaceLogs(
@@ -206,18 +236,22 @@ export async function syncWorkspaceStatus(
     return "stopped";
   }
 
-  const dockerStatus =
-    await getContainerStatus(
-      workspace.container_id
-    );
+  const dockerStatus = await getContainerStatus(workspace.container_id);
 
-  const status =
-    mapDockerStatus(dockerStatus);
+  if (dockerStatus === "missing") {
+    console.log(`Container for workspace ${workspace.id} is missing.`);
 
-  await updateWorkspaceStatus(
-    workspace.id,
-    status
-  );
+    await updateContainerId(workspace.id, null);
+
+    await updateWorkspaceStatus(workspace.id, "stopped");
+
+    return "stopped";
+  }
+
+
+  const status = mapDockerStatus(dockerStatus);
+
+  await updateWorkspaceStatus(workspace.id, status);
 
   return status;
 }

@@ -13,7 +13,7 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_URL}/api/auth/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export async function register(
   email: string,
   password: string
 ) {
-  const response = await fetch(`${API_URL}/api/auth/register`, {
+  const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export async function register(
 export async function me(
   token: string
 ): Promise<UserResponse> {
-  const response = await fetch(`${API_URL}/api/auth/me`, {
+  const response = await fetch(`${API_URL}/auth/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
