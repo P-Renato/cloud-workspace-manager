@@ -49,7 +49,7 @@ The project was built as a hands-on way to develop practical experience across b
                                          ▼               ▼
                                 Ubuntu Workspaces     Grafana
                                   + Volumes
-
+```
 
 The application services are managed with Docker Compose. Nginx runs on the host and acts as the public entry point for the application.
 
@@ -74,8 +74,6 @@ Docker container + persistent volume
 
 
 If a workspace container disappears, the backend can recreate it and attach the existing volume.
-
----
 
 ## Technology Stack
 
@@ -142,8 +140,6 @@ The project gave me practical experience with:
 - Python
 - Bash
 - GitHub Actions
-
----
 
 ## Development Environment
 
