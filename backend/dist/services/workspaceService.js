@@ -25,14 +25,11 @@ const workspaceTemplates_1 = require("../config/workspaceTemplates");
 const dockerService_3 = require("./dockerService");
 const dockerStatusMapper_1 = require("./dockerStatusMapper");
 const prometheus_1 = require("../config/prometheus");
-async function createWorkspace(userId, name, templateId) {
-    const template = workspaceTemplates_1.WORKSPACE_TEMPLATES[templateId];
-    if (!template) {
-        throw new BadRequestError_1.BadRequestError("Invalid workspace template");
-    }
+console.log("workspaceService loading");
+async function createWorkspace(userId, name) {
     const id = crypto_1.default.randomUUID();
     const volumeName = `workspace-${id}-data`;
-    await (0, workspaceRepository_1.createWorkspace)(id, userId, name, template.id, template.image, volumeName);
+    await (0, workspaceRepository_1.createWorkspace)(id, userId, name, workspaceTemplates_1.DEFAULT_WORKSPACE.id, workspaceTemplates_1.DEFAULT_WORKSPACE.image, volumeName);
     await (0, activityLogRepository_1.createActivityLog)(crypto_1.default.randomUUID(), id, "CREATE_WORKSPACE");
     prometheus_1.workspaceCreationCounter.inc();
     return { id, name, status: "stopped", };

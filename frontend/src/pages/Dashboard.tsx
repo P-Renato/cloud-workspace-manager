@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-
 import { useAuth } from "../context/AuthContext";
-
-import {
-  getHealth,
-  type HealthResponse,
-} from "../api/health";
-
+import { getHealth, type HealthResponse } from "../api/health";
 import {
   getWorkspaces,
   createWorkspace,
@@ -16,165 +10,129 @@ import {
   getAdminMetrics,
   type AdminMetrics,
 } from "../api/workspaces";
-
 import type { Workspace } from "../types/workspace";
 
-import DashboardHeader from "../components/DashboardHeader";
-import WorkspaceForm from "../components/WorkspaceForm";
-import WorkspaceList from "../components/WorkspaceList";
-import SystemStatus from "../components/SystemStatus";
+import DashboardHeader from "../components/DashboardHeader/DashboardHeader";
+import WorkspaceForm from "../components/WorkspaceForm/WorkspaceForm";
+import WorkspaceList from "../components/WorkspaceList/WorkspaceList";
+import SystemStatus from "../components/SystemStatus/SystemStatus";
 import AdminMetricsHeader from "../components/AdminMetricsHeader";
+import Page from "../components/ui/Page";
 
 export default function Dashboard() {
-  const {
-    user,
-    token,
-    logout,
-  } = useAuth();
+  const { token, logout } = useAuth();
 
   const [health, setHealth] = useState<HealthResponse | null>(null);
-
   const [healthError, setHealthError] = useState<string | null>(null);
 
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
 
-  const [adminMetrics, setAdminMetrics] = useState<AdminMetrics | null>(null);
+  const [adminMetrics, setAdminMetrics] =
+    useState<AdminMetrics | null>(null);
 
   useEffect(() => {
     getHealth()
       .then(setHealth)
-      .catch((err) =>
-        setHealthError(err.message)
-      );
+      .catch((err) => setHealthError(err.message));
   }, []);
 
   async function refreshWorkspaces() {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     try {
-      const data =
-        await getWorkspaces(token);
-
+      const data = await getWorkspaces(token);
       setWorkspaces(data);
     } catch (err) {
       if (err instanceof Error) {
-        setWorkspaceError(
-          err.message
-        );
+        setWorkspaceError(err.message);
       }
     }
   }
 
   async function refreshAdminMetrics() {
     console.log("REFRESHING ADMIN METRICS");
-    if (!token) {
-      return;
-    }
+
+    if (!token) return;
 
     try {
       const data = await getAdminMetrics(token);
+
       console.log("ADMIN METRICS:", data);
 
       setAdminMetrics(data);
     } catch (err) {
-      console.error(
-        "Failed to load admin metrics",
-        err
-      );
+      console.error("Failed to load admin metrics", err);
     }
   }
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     refreshWorkspaces();
     refreshAdminMetrics();
 
     const interval = setInterval(() => {
-      refreshWorkspaces();                                        
+      refreshWorkspaces();
       refreshAdminMetrics();
     }, 5000);
 
-    return () =>
-      clearInterval(interval);
+    return () => clearInterval(interval);
   }, [token]);
 
-  async function handleCreate( name: string, templateId: string) {
-    if (!token) {
-      return;
-    }
+  async function handleCreate(name: string) {
+    if (!token) return;
 
-    await createWorkspace(token,name,templateId);
-
+    await createWorkspace(token, name);
     await refreshWorkspaces();
   }
 
   async function handleStart(workspaceId: string) {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
-    await startWorkspace(token,workspaceId);
-
+    await startWorkspace(token, workspaceId);
     await refreshWorkspaces();
   }
 
   async function handleStop(workspaceId: string) {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
-    await stopWorkspace(token,workspaceId);
-
+    await stopWorkspace(token, workspaceId);
     await refreshWorkspaces();
   }
 
   async function handleDelete(workspaceId: string) {
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
-    await deleteWorkspace(token,workspaceId);
-
+    await deleteWorkspace(token, workspaceId);
     await refreshWorkspaces();
   }
 
   return (
     <div>
       <DashboardHeader
-        userId={user?.userId}
         onLogout={logout}
       />
 
-      <WorkspaceForm
-        onCreate={handleCreate}
-      />
+      <Page>
+        <WorkspaceForm onCreate={handleCreate} />
 
-      {workspaceError && (
-        <p>{workspaceError}</p>
-      )}
+        {workspaceError && <p>{workspaceError}</p>}
 
-      <WorkspaceList
-        workspaces={workspaces}
-        onStart={handleStart}
-        onStop={handleStop}
-        onDelete={handleDelete}
-      />
+        <WorkspaceList
+          workspaces={workspaces}
+          onStart={handleStart}
+          onStop={handleStop}
+          onDelete={handleDelete}
+        />
 
-      <AdminMetricsHeader
-        metrics={adminMetrics}
-      />
+        <AdminMetricsHeader metrics={adminMetrics} />
 
-      <SystemStatus
-        health={health}
-        error={healthError}
-      />
+        <SystemStatus
+          health={health}
+          error={healthError}
+        />
+      </Page>
     </div>
   );
 }

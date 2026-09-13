@@ -12,10 +12,6 @@ import AdminMetrics from "./pages/AdminMetrics";
 function App() {
   return (
     <Routes>
-      <Route
-        path="/test"
-        element={<h1>HELLO</h1>}
-      />
       <Route path="/login" element={<Login />} />
 
       <Route

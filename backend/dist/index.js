@@ -10,7 +10,7 @@ const env_1 = require("./config/env");
 const morgan_1 = __importDefault(require("morgan"));
 const testDatabase_1 = require("./config/testDatabase");
 const workspaceRoutes_1 = __importDefault(require("./routes/workspaceRoutes"));
-const workspaceTemplateRoutes_1 = __importDefault(require("./routes/workspaceTemplateRoutes"));
+console.log("workspaceRoutes imported");
 const healthRoutes_1 = __importDefault(require("./routes/healthRoutes"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
@@ -19,6 +19,7 @@ const socketServer_1 = require("./socket/socketServer");
 const terminalSocket_1 = require("./socket/terminalSocket");
 const prometheus_1 = require("./config/prometheus");
 const metrics_1 = require("./middleware/metrics");
+const adminMetricsRoutes_1 = __importDefault(require("./routes/adminMetricsRoutes"));
 dotenv_1.default.config({
     path: process.env.NODE_ENV === "production"
         ? ".env.production"
@@ -41,15 +42,12 @@ app.get("/metrics", async (_req, res) => {
 app.use("/api", healthRoutes_1.default);
 app.use("/api/auth", authRoutes_1.default);
 app.use("/api/workspaces", workspaceRoutes_1.default);
-app.use("/api/workspace-templates", workspaceTemplateRoutes_1.default);
+console.log("workspaceRoutes mounted");
+app.use("/api/admin", adminMetricsRoutes_1.default);
 app.use(errorHandler_1.errorHandler);
 (0, testDatabase_1.testDatabaseConnection)();
 const PORT = env_1.env.PORT || 3000;
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.originalUrl}`);
-    next();
-});
 server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log("SERVER LISTENING");
 });
 //# sourceMappingURL=index.js.map

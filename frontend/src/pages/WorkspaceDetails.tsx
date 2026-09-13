@@ -12,11 +12,11 @@ import type { Workspace } from "../types/workspace";
 import type { ActivityLog } from "../types/activityLogs";
 import type { ContainerMetadata } from "../types/activityLogs";
 
-import WorkspaceInfo from "../components/WorkspaceInfo";
-import ContainerInfo from "../components/ContainerInfo";
-import ActivityLogList from "../components/ActivityLogList";
-import WorkspaceActions from "../components/WorkspaceActions";
-import ContainerStats from "../components/ContainerStats";
+import WorkspaceInfo from "../components/WorkspaceInfo/WorkspaceInfo";
+import ContainerInfo from "../components/ContainerInfo/ContainerInfo";
+import ActivityLogList from "../components/ActivityLog/ActivityLogList";
+import WorkspaceActions from "../components/WorkspaceActions/WorkspaceActions";
+import ContainerStats from "../components/ContainerStats/ContainerStats";
 import type { ContainerStatsType } from "../api/workspaces";
 import Page from "../components/ui/Page";
 import SectionTitle from "../components/ui/SectionTitle";

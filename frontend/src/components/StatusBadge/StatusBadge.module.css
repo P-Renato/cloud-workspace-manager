@@ -1,0 +1,20 @@
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.running {
+  background-color: #16a34a;
+}
+
+.stopped {
+  background-color: #6b7280;
+}
+
+.error {
+  background-color: #dc2626;
+}

@@ -4,15 +4,15 @@ services:
     container_name: cwm-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: cloud_workspace_manager
-      POSTGRES_USER: cloudworkspace_app
+      POSTGRES_DB: cloud_workspace
+      POSTGRES_USER: cloud_workspace
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cloudworkspace_app"]
+      test: ["CMD-SHELL", "pg_isready -U cloud_workspace"]
 
   backend:
     build:

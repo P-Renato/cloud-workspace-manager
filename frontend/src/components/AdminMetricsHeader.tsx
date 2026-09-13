@@ -2,7 +2,7 @@ import type { AdminMetrics as AdminMetricsData } from "../api/workspaces";
 
 import SectionTitle from "./ui/SectionTitle";
 
-import styles from "./AdminMetrics.module.css";
+import styles from "./AdminMetrics/AdminMetrics.module.css";
 
 interface Props {
   metrics: AdminMetricsData | null;

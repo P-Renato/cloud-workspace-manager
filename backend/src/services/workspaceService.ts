@@ -21,29 +21,24 @@ import { ActivityLog } from "../types/activityLog";
 
 import { BadRequestError } from "../errors/BadRequestError";
 
-import { WORKSPACE_TEMPLATES } from "../config/workspaceTemplates";
+import { DEFAULT_WORKSPACE } from "../config/workspaceTemplates";
 
 import { getContainerStatus } from "./dockerService";
 import { mapDockerStatus } from "./dockerStatusMapper";
 import { workspaceCreationCounter, workspaceDeletionCounter, workspaceStartCounter, workspaceStopCounter, workspaceStartupDuration,} from "../config/prometheus";
 
+console.log("workspaceService loading");
 
 export async function createWorkspace(
   userId: string,
   name: string,
-  templateId: string,
 ): Promise<Pick<Workspace, "id" | "name" | "status">> {
-  const template = WORKSPACE_TEMPLATES[templateId];
-
-  if (!template) {
-      throw new BadRequestError("Invalid workspace template");
-  }
 
   const id = crypto.randomUUID();
 
   const volumeName = `workspace-${id}-data`;
 
-  await createWorkspaceRepository(id, userId, name, template.id, template.image, volumeName);
+  await createWorkspaceRepository(id, userId, name, DEFAULT_WORKSPACE.id, DEFAULT_WORKSPACE.image, volumeName);
 
   await createActivityLog(crypto.randomUUID(),id, "CREATE_WORKSPACE");
 
