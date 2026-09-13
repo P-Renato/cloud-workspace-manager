@@ -6,11 +6,6 @@ export const createWorkspaceSchema = z.object({
     .trim()
     .min(1)
     .max(100),
-
-  templateId: z
-    .string()
-    .trim()
-    .min(1),
 });
 
 export const updateWorkspaceSchema = z.object({

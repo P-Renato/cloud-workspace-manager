@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/ui/Button";
 import SectionTitle from "../components/ui/SectionTitle";
 import Card from "../components/ui/Card";
-import styles from "../components/WorkspaceForm.module.css"
+import styles from "../components/WorkspaceForm/WorkspaceForm.module.css"
 
 export default function Login() {
   const { login } = useAuth();

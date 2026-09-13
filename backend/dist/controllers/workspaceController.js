@@ -5,12 +5,14 @@ const UnauthorizedError_1 = require("../errors/UnauthorizedError");
 const ForbiddenError_1 = require("../errors/ForbiddenError");
 const NotFoundError_1 = require("../errors/NotFoundError");
 const dockerService_1 = require("../services/dockerService");
+console.log("Before importing workspaceService");
 const workspaceService_1 = require("../services/workspaceService");
+console.log("After importing workspaceService");
 const create = async (req, res) => {
     if (!req.userId) {
         throw new UnauthorizedError_1.UnauthorizedError();
     }
-    const workspace = await (0, workspaceService_1.createWorkspace)(req.userId, req.body.name, req.body.templateId);
+    const workspace = await (0, workspaceService_1.createWorkspace)(req.userId, req.body.name);
     return res.status(201).json(workspace);
 };
 exports.create = create;
@@ -152,4 +154,7 @@ const stats = async (req, res) => {
     return res.json(stats);
 };
 exports.stats = stats;
+console.log(typeof exports.getAll);
+console.log(exports.getAll.name);
+console.log(exports.getAll.constructor.name);
 //# sourceMappingURL=workspaceController.js.map

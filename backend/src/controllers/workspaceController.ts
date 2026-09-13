@@ -6,6 +6,7 @@ import { ForbiddenError } from "../errors/ForbiddenError";
 import { NotFoundError } from "../errors/NotFoundError";
 import { getContainerMetadata } from "../services/dockerService";
 
+console.log("Before importing workspaceService");
 import {
   createWorkspace,
   getUserWorkspaces,
@@ -17,6 +18,8 @@ import {
   syncWorkspaceStatus,
   getWorkspaceStats
 } from "../services/workspaceService";
+
+console.log("After importing workspaceService");
 
 interface WorkspaceParams {
   id: string;
@@ -30,11 +33,7 @@ export const create = async (
     throw new UnauthorizedError();
   }
 
-  const workspace = await createWorkspace(
-    req.userId,
-    req.body.name,
-    req.body.templateId,
-  );
+  const workspace = await createWorkspace(req.userId, req.body.name );
 
   return res.status(201).json(workspace);
 };
@@ -269,3 +268,8 @@ export const stats = async (
 
   return res.json(stats);
 };
+
+
+console.log(typeof getAll);
+console.log(getAll.name);
+console.log(getAll.constructor.name);

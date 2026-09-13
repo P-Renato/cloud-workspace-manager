@@ -8,10 +8,6 @@ exports.createWorkspaceSchema = zod_1.z.object({
         .trim()
         .min(1)
         .max(100),
-    templateId: zod_1.z
-        .string()
-        .trim()
-        .min(1),
 });
 exports.updateWorkspaceSchema = zod_1.z.object({
     name: zod_1.z

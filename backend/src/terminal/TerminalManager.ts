@@ -2,6 +2,8 @@ import { Socket } from "socket.io";
 import { TerminalSession } from "./TerminalSession";
 import { getWorkspaceTerminalCommand } from "../services/workspaceService";
 
+console.log("TerminalManager loading");
+
 export class TerminalManager {
   private sessions = new Map<string, TerminalSession>();
 

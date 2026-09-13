@@ -5,7 +5,8 @@ import { env } from "./config/env";
 import morgan from "morgan";
 import { testDatabaseConnection } from "./config/testDatabase";
 import workspaceRoutes from "./routes/workspaceRoutes";
-import workspaceTemplateRoutes from "./routes/workspaceTemplateRoutes";
+
+console.log("workspaceRoutes imported");
 import healthRoutes from "./routes/healthRoutes";
 import authRoutes from "./routes/authRoutes"
 import { errorHandler } from "./middleware/errorHandler";
@@ -15,6 +16,7 @@ import { registerTerminalSocket } from "./socket/terminalSocket";
 import { register } from "./config/prometheus";
 import { metricsMiddleware } from "./middleware/metrics";
 import adminMetricsRoutes from "./routes/adminMetricsRoutes";
+
 
 dotenv.config({
   path:
@@ -44,18 +46,16 @@ app.get("/metrics", async (_req, res) => {
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/workspaces", workspaceRoutes);
-app.use("/api/workspace-templates", workspaceTemplateRoutes);
+
+console.log("workspaceRoutes mounted");
+
 app.use("/api/admin", adminMetricsRoutes);
 app.use(errorHandler)
+
 testDatabaseConnection();
 
 const PORT = env.PORT || 3000;
 
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
-
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log("SERVER LISTENING");
 });
