@@ -70,6 +70,7 @@ Docker container + persistent volume
               ▼
        Persistent volume
        remains available
+```
 
 
 If a workspace container disappears, the backend can recreate it and attach the existing volume.
@@ -191,6 +192,7 @@ Use interactive terminal
 Stop workspace
    ↓
 Delete workspace
+```
 
 
 ## Learning Journey
