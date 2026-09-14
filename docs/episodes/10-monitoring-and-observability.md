@@ -144,11 +144,11 @@ This was a big change in how I thought about the project.
 
 Before, I mostly asked:
 
-| Does ir work?
+> Does it work?
 
 Now I could ask:
 
-| What is the system doing?
+> What is the system doing?
 
 ## What I learned
 
